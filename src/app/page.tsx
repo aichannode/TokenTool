@@ -1,113 +1,117 @@
 import Image from "next/image";
 
+import { tokenInfoList } from "../global/config"
+import TokenPanel from "../components/TokenPanel";
+import Footer from "../components/Footer"
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <main className="flex flex-col items-center  px-[20px] pt-[20px] mt-[60px] md:mt-[80px]">
+      <p className=" text-[30px] md:text-[50px] font-[700] text-black">
+        TokenTool
+      </p>
+      <p className="text-gray-500 font-[500] text-[14px] text-center md:text-[20px]">
+        Create your own token, in just 1 minute. Pick from our selection of tokens.
+      </p>
+
+      {
+        tokenInfoList.map((item: any, index: number) => {
+          return <div key={index}>
+            <TokenPanel title={item.title} icon={item.icon} info={item.info} utils={item.utils} router={item.router} />
+          </div>
+        })
+      }
+      <div className="flex flex-col items-start w-full md:w-[800px]">
+        <div className="flex flex-col items-start gap-2 mt-[20px]">
+          <p className="text-[16px] font-[700]">
+            What is TokenTool.io?
+          </p>
+          <p className="text-[14px] font-[500]">
+            TokenTool is an online tool to create and deploy your own ERC20 and Solana Tokens on many different blockchains such as Ethereum, BNB Smart Chain, Solana, BASE and more!
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-2 mt-[10px]">
+          <p className="text-[16px] font-[700]">
+            What is an Ethereum Token?
+          </p>
+          <p className="text-[14px] font-[500]">
+            An Ethereum token is a digital asset that represents something of value, such as a currency, a company share, or a virtual collectible. Tokens are managed by a smart contract, which is a program on Ethereum that stores the balance of each address as a mapping of addresses to numbers
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-2 mt-[10px]">
+          <p className="text-[16px] font-[700]">
+            What is Solana?
+          </p>
+          <p className="text-[14px] font-[500]">
+            Solana is a blockchain platform that aims to provide fast and low-cost transactions. It's known for its scalability and can handle thousands of transactions per second. Solana is open, interoperable, and decentralized, and is used for a range of use cases, including finance, payments, and gaming.
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-2 mt-[10px]">
+          <p className="text-[16px] font-[700]">
+            What is BASE?
+          </p>
+          <p className="text-[14px] font-[500]">
+            Base is a Layer 2 (L2) blockchain network developed by Coinbase, a crypto exchange company, that was launched on August 9, 2023. Base is designed to be secure, low-cost, and developer-friendly, while also being open source and decentralized. Base is built on top of OP Stack, an open-source template that allows anyone to build their own Ethereum L2.
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-2 mt-[10px]">
+          <p className="text-[16px] font-[700]">
+            What is Binance Smart Chain?
+          </p>
+          <p className="text-[14px] font-[500]">
+            Binance Smart Chain (BSC) is a blockchain network that supports smart contracts and decentralized applications (DApps). It was launched by Binance in September 2020 and runs alongside the Binance Chain, which supports high transaction volumes. BSC has a dual-chain architecture that's compatible with the Ethereum network, which provides faster transaction speeds and lower fees.
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-2 mt-[10px]">
+          <p className="text-[16px] font-[700]">
+            What is Blast?
+          </p>
+          <p className="text-[14px] font-[500]">
+            The Blast Network is an Ethereum Layer 2 network that offers native yield for stablecoins and ETH. It is known for its fast growth and diverse ecosystem of gaming and DeFi projects. The network provides token holders with extra rewards through auto rebasing and staking, which earns interest rates that are automatically passed back to Blast users. Users can earn up to 5% interest rates.
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-2 mt-[10px]">
+          <p className="text-[16px] font-[700]">
+            What is TokenTool.io?
+          </p>
+          <p className="text-[14px] font-[500]">
+            TokenTool is an online tool to create and deploy your own ERC20 and Solana Tokens on many different blockchains such as Ethereum, BNB Smart Chain, Solana, BASE and more!
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-2 mt-[10px]">
+          <p className="text-[16px] font-[700]">
+            What is Polygon?
+          </p>
+          <p className="text-[14px] font-[500]">
+            Polygon is a blockchain platform and cryptocurrency that connects and scales blockchain networks. It was launched in 2017 under the name Matic Network, and was rebranded as Polygon Technology in 2021. Polygon is a "layer two" or "sidechain" scaling solution that runs alongside the Ethereum blockchain. Polygon's native currency is MATIC, which is used for fees, staking, network security, and governance.
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-2 mt-[10px]">
+          <p className="text-[16px] font-[700]">
+            What is Op Mainnet?
+          </p>
+          <p className="text-[14px] font-[500]">
+            OP Mainnet uses optimistic rollup technology, which bundles together transactions to boost efficiency while leveraging the underlying security of Ethereum. 1. As of September 2023, OP Mainnet's ecosystem includes 180+ dApps and is growing rapidly
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-2 mt-[10px]">
+          <p className="text-[16px] font-[700]">
+            What is Arbitrum One?
+          </p>
+          <p className="text-[14px] font-[500]">
+            Arbitrum is a layer 2 cryptocurrency network that aims to make Ethereum transactions faster and more affordable. It uses optimistic rollups (OR) technology to batch transactions and execute them off the main Ethereum chain, which reduces congestion on the mainnet. This allows Arbitrum to offer lower fees and higher throughput.
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-2 mt-[10px]">
+          <p className="text-[16px] font-[700]">
+            What is Avalanche?
+          </p>
+          <p className="text-[14px] font-[500]">
+            Avalanche is a blockchain platform that allows users to create decentralized applications (dApps), financial assets, and trading. It's designed to scale quickly without sacrificing speed, reliability, and security. Avalanche is a competitor to Ethereum (ETH), but it has a key advantage in that it's also compatible with Ethereum.
+          </p>
         </div>
       </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      <Footer />
     </main>
   );
 }
