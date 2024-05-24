@@ -5,6 +5,8 @@ import { useDropzone } from 'react-dropzone'
 import { CSSProperties } from 'react';
 import { useStorageUpload } from "@thirdweb-dev/react";
 import { Spinner } from "@material-tailwind/react";
+import path from 'path';
+import Image from 'next/image';
 
 const baseStyle: CSSProperties = {
     flex: 1,
@@ -39,7 +41,7 @@ export default function StyledDropzone(props: any) {
     const { metadata, setMetadata } = props;
     const { mutateAsync: upload } = useStorageUpload();
     const [isLoading, setIsLoading] = useState(false);
-
+    const [paths, setPaths] = useState([]);
     const uploadToIpfs = async (file: any) => {
         setIsLoading(true);
         const uploadUrl = await upload({
@@ -52,6 +54,7 @@ export default function StyledDropzone(props: any) {
 
     const onDrop = useCallback(async (acceptedFiles: any) => {
         const file = acceptedFiles[0];
+        setPaths(acceptedFiles.map((file: any) => URL.createObjectURL(file)));
         await uploadToIpfs(file)
     }, [])
     const { getRootProps,
@@ -80,6 +83,13 @@ export default function StyledDropzone(props: any) {
                     <div {...getRootProps({ style })}>
                         <input {...getInputProps()} />
                         <p>Drag 'n' drop some files here, or click to select files</p>
+                        <div className='flex flex-row items-center'>
+                            {
+                                paths.map((item: any) => {
+                                    return (<img src={item} key={item} alt={item} className='w-[100px] h-[100px]' />)
+                                })
+                            }
+                        </div>
                     </div>
                     {isLoading ?
                         <div className='w-full flex flex-col items-center py-2'>
