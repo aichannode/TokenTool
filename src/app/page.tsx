@@ -72,14 +72,6 @@ export default function Home() {
         </div>
         <div className="flex flex-col items-start gap-2 mt-[10px]">
           <p className="text-[16px] font-[700]">
-            What is TokenTool.io?
-          </p>
-          <p className="text-[14px] font-[500]">
-            TokenTool is an online tool to create and deploy your own ERC20 and Solana Tokens on many different blockchains such as Ethereum, BNB Smart Chain, Solana, BASE and more!
-          </p>
-        </div>
-        <div className="flex flex-col items-start gap-2 mt-[10px]">
-          <p className="text-[16px] font-[700]">
             What is Polygon?
           </p>
           <p className="text-[14px] font-[500]">

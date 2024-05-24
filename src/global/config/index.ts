@@ -38,6 +38,11 @@ export const menuList = [
         name: "Solana Token Creator",
         router: "/spl-token"
     },
+    {
+        icon: "",
+        name: "Pricing",
+        router: "/pricing"
+    },
 ]
 
 export const tokenInfoList = [
@@ -101,3 +106,53 @@ export const chainInfoList = [
         chainId: "81457"
     },
 ]
+
+
+export const TABLE_HEAD = ["Chain Name", "Price"];
+
+export const TABLE_ROWS = [
+    {
+        icon: EthereumIcon,
+        title: "Ethereum",
+        price: '0.015 ETH'
+    },
+    {
+        icon: BinanceIcon,
+        title: "Binance Smart Chain",
+        price: '0.1 BNB'
+    },
+    {
+        icon: PolygonIcon,
+        title: "Polygon",
+        price: '50 MATIC'
+    },
+    {
+        icon: BaseIcon,
+        title: "Base",
+        price: '0.015 ETH'
+    },
+    {
+        icon: OptimismIcon,
+        title: "Op Mainnet",
+        price: '0.015 ETH'
+    },
+    {
+        icon: ArbitrumIcon,
+        title: "Arbitrum One",
+        price: '0.015 ETH'
+    },
+    {
+        icon: AvalancheIcon,
+        title: "Avalanche",
+        price: '1.5 AVAX'
+    },
+    {
+        icon: BlastIcon,
+        title: "Blast",
+        price: '0.015 ETH'
+    },
+    {
+        icon: SolanaIcon,
+        title: "Solana",
+        price: '0.25 SOL'
+    }]

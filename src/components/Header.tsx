@@ -40,8 +40,8 @@ export default function Header() {
                         menuList.map((item: any, index: any) => {
                             return <Link key={index}
                                 href={item.router}
-                                className="flex flex-row items-center gap-2 text-[18px] font-[700] text-gray-600">
-                                <Image src={item.icon} alt={item.name} className="w-[30px] h-[30px] rounded-full" />
+                                className="flex flex-row items-center gap-2 text-[18px] font-[700] text-gray-600 ">
+                                {item.icon != "" && <Image src={item.icon} alt={item.name} className="w-[30px] h-[30px] rounded-full" />}
                                 {item.name}
                             </Link>
                         })
@@ -65,26 +65,44 @@ export default function Header() {
                 onPointerEnterCapture={() => { }}
                 onPointerLeaveCapture={() => { }}>
                 <div className="flex flex-col items-start gap-2 px-[20px]">
-                    <Link className="text-[18px] font-[500] mt-[60px]" href="/">
+                    <button className="text-[18px] font-[500] mt-[60px]" onClick={() => {
+                        router.push("/")
+                        closeDrawer();
+                    }}>
                         - Home
-                    </Link>
-                    <Link className="text-[18px] font-[500]" href="/standard-token">
+                    </button>
+                    <button className="text-[18px] font-[500]" onClick={() => {
+                        router.push("/standard-token");
+                        closeDrawer();
+                    }}>
                         - EVM Token Creator
-                    </Link>
-                    <Link className="text-[18px] font-[500]" href="/spl-token">
+                    </button>
+                    <button className="text-[18px] font-[500]" onClick={() => {
+                        router.push("/spl-token");
+                        closeDrawer();
+                    }}>
                         - Solana Token Creator
-                    </Link>
-                    <Link className="text-[18px] font-[500]" href="/">
-                        - Fees
-                    </Link>
-                    <Link className="text-[18px] font-[500]" href="/contact-us">
+                    </button>
+                    <button className="text-[18px] font-[500]" onClick={() => {
+                        router.push("/pricing");
+                        closeDrawer();
+                    }}>
+                        - Pricing
+                    </button>
+                    <button className="text-[18px] font-[500]" onClick={() => {
+                        router.push("/contact-us");
+                        closeDrawer();
+                    }}>
                         - Contact Us
-                    </Link>
-                    <Link className="text-[18px] font-[500]" href="" >
-                        - X (Twitter)
-                    </Link>
-                </div>
-            </Drawer>
-        </div>
+                    </button>
+                    <button className="text-[18px] font-[500]" onClick={() => {
+                        router.push("/contact-us");
+                        closeDrawer();
+                    }} >
+                        - X(Twitter)
+                    </button >
+                </div >
+            </Drawer >
+        </div >
     )
 }

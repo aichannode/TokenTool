@@ -10,6 +10,10 @@ import { createCreateMetadataAccountV3Instruction, PROGRAM_ID } from '@metaplex-
 import StyledDropzone from "../../components/Dropzone";
 import { useStorageUpload } from "@thirdweb-dev/react";
 
+import { Metadata } from 'next';
+
+
+
 export default function SplToken() {
   const [decimal, setDecimal] = useState(0);
   const [sliderValue, setSliderValue] = useState<number>(100);
@@ -218,8 +222,8 @@ export default function SplToken() {
   }
 
   return (
-    <div className="flex flex-col items-center p-[20px] mt-[60px] md:mt-[80px]">
-      <p className="text-[30px] md:text-[40px] text-gray-900 font-[700] mt-[20px] md:mt-[100px]">
+    <div className="flex flex-col items-center p-[20px] pt-[60px] md:pt-[80px]">
+      <p className="text-[30px] md:text-[40px] text-gray-900 font-[700] mt-[20px]">
         {tokenInfoList[1].title}
       </p>
       <p className="w-full md:w-[800px] text-[16px]  md:text-[18px] text-gray-500 font-[500] mt-[20px]">
@@ -237,7 +241,7 @@ export default function SplToken() {
       <div className="mt-[20px]">
         <WalletMultiButton />
       </div>
-      <div className="border-[1px] border-black rounded-xl w-full md:w-[800px] mt-[20px]">
+      <div className="border-[1px] border-[#AAA] bg-white rounded-xl w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
           <p className="text-gray-900 text-[24px] font-[700]">
             Token Information
@@ -323,7 +327,7 @@ export default function SplToken() {
         </div>
       </div>
 
-      <div className="border-[1px] border-black rounded-xl w-full md:w-[800px] mt-[20px]">
+      <div className="border-[1px] border-[#AAA] bg-white rounded-xl w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
           <p className="text-gray-900 text-[24px] font-[700]">
             Additional Metadata
@@ -372,7 +376,7 @@ export default function SplToken() {
         </div>
       </div>
 
-      <div className="border-[1px] border-black rounded-xl w-full md:w-[800px] mt-[20px]">
+      <div className="border-[1px] border-[#AAA] bg-white rounded-xl w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
           <p className="text-gray-900 text-[24px] font-[700]">
             Options
@@ -468,7 +472,7 @@ export default function SplToken() {
 
       </div>
 
-      <div className="border-[1px] border-black rounded-xl w-full md:w-[800px] mt-[20px]">
+      <div className="border-[1px] border-[#AAA] bg-white rounded-xl w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
           <p className="text-gray-900 text-[24px] font-[700]">
             Deploy Token
@@ -502,16 +506,17 @@ export default function SplToken() {
         </div>
       </div>
       <div className="flex flex-col gap-1 mt-[20px] w-full md:w-[800px]">
-        <h1 className="text-gray-800 text-[15px] font-[700]">
+        <h1 className="text-gray-800 text-[15px] font-[700] w-full text-center">
           Create Solana Token
         </h1>
         <h3 className="text-gray-800 text-[15px]">
-          Effortlessly create your Solana SPL Token with our 7+1 step process – no coding required.
+          Effortlessly create your Solana SPL Token with our 6+4 step process – no coding required.
+
         </h3>
         <h3 className="text-gray-800 text-[15px]">
           Customize your Solana Token exactly the way you envision it. It takes 1  minute, at an affordable cost.
         </h3>
-        <h1 className="text-gray-800 text-[15px] font-[700]">
+        <h1 className="text-gray-800 text-[15px] font-[700] w-full text-center">
           How to use Solana Token Creator
         </h1>
         <h3 className="text-gray-800 text-[15px]">
@@ -541,26 +546,23 @@ export default function SplToken() {
         <h3 className="text-gray-800 text-[15px]">
           The cost of Token creation is 0.3 SOL, covering all fees for SPL Token Creation.
         </h3>
-        <h1 className="text-gray-800 text-[15px] font-[700]">
+        <h1 className="text-gray-800 text-[15px] font-[700] w-full text-center">
           Revoke Freeze Authority:
         </h1>
         <h3 className="text-gray-800 text-[15px]">
-          If you want to create a liquidity pool you will need to "Revoke Freeze Authority" of the Token, you can do that here. The cost is 0.1 SOL.
+          If you want to create a liquidity pool you will need to "Revoke Freeze Authority" of the Token, you can do that here. This is free on TokenTool!
         </h3>
-        <h1 className="text-gray-800 text-[15px] font-[700]">
+        <h1 className="text-gray-800 text-[15px] font-[700] w-full text-center">
           Revoke Mint Authority:
         </h1>
         <h3 className="text-gray-800 text-[15px]">
-          Revoking mint authority ensures that there can be no more tokens minted than the total supply. This provides security and peace of mind to buyers. The cost is 0.1 SOL
+          Revoking mint authority ensures that there can be no more tokens minted than the total supply. This provides security and peace of mind to buyers. This is also free on TokenTool!
         </h3>
         <h3 className="text-gray-800 text-[15px]">
           Once the creation process starts, it will only take a few seconds! Once complete, you will receive the total supply of the token in your wallet.
         </h3>
         <h3 className="text-gray-800 text-[15px]">
           With our user-friendly platform, managing your tokens is simple and affordable. Using your wallet, you can easily create tokens, increase their supply, or freeze them as needed. Discover the ease of Solana Token creation with us
-        </h3>
-        <h3 className="text-gray-800 text-[15px]">
-          You can choose to revoke mint authority later if you choose
         </h3>
 
       </div>

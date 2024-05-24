@@ -137,12 +137,12 @@ export default function StandardToken() {
   }, [sliderValue])
 
   return (
-    <div className="flex flex-col items-center p-[20px] mt-[60px] md:mt-[80px] bg-white">
-      <p className="text-[30px] md:text-[40px] text-gray-900 font-[700] mt-[20px] md:mt-[100px]">
+    <div className="flex flex-col items-center p-[20px] pt-[60px] md:pt-[80px] ">
+      <p className="text-[30px] md:text-[40px] text-gray-900 font-[700]  mt-[20px]">
         {tokenInfoList[0].title}
       </p>
       <p className="w-full md:w-[800px] text-[16px]  md:text-[18px] text-gray-500 font-[500] mt-[20px]">
-        {tokenInfoList[0].info}
+        Our most popular token, includes all standard features from ERC20 standard token. Including Base, Ethereum, Blast and many more!
       </p>
       {/* <div className="flex flex-wrap items-center gap-2 mt-[20px]">
                 {
@@ -158,7 +158,7 @@ export default function StandardToken() {
           <ConnectButton />
         }
       </div>
-      <div className="border-[1px] rounded-xl border-black bg-white w-full md:w-[800px] mt-[20px]">
+      <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
           <p className="text-gray-900 text-[24px] font-[700]">
             Token Information
@@ -264,7 +264,7 @@ export default function StandardToken() {
         </div>
       </div>
 
-      <div className="border-[1px] rounded-xl border-black bg-white w-full md:w-[800px] mt-[20px]">
+      <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
           <p className="text-gray-900 text-[24px] font-[700]">
             Token Supply
@@ -299,7 +299,7 @@ export default function StandardToken() {
         </div>
       </div>
 
-      <div className="border-[1px] rounded-xl border-black bg-white w-full md:w-[800px] mt-[20px]">
+      <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
           <p className="text-gray-900 text-[24px] font-[700]">
             Deploy Token
@@ -331,7 +331,7 @@ export default function StandardToken() {
         <h2 className="text-gray-800 text-[15px]">
           Please note that some wallets won’t automatically show your token. You might have to import or unhide your custom tokens in the wallet settings.
         </h2>
-        <h1 className="text-gray-800 text-[15px] font-[700]">
+        <h1 className="w-full text-gray-800 text-[15px] font-[700] text-center">
           How to use EVM Standard token creator
         </h1>
         <h2 className="text-gray-800 text-[15px]">

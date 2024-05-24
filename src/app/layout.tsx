@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* <!-- Primary Meta Tags --> */}
-        <title>TokenTook(EVM & SPL Token Launchpad)</title>
+        <title>Crypto Token Tool</title>
         <link rel="icon" type="image/png" href="/logo.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
         <link rel="icon" type="image/png" href="/logo.png" sizes="32x32" />
@@ -30,8 +30,12 @@ export default function RootLayout({
         <meta name="title" content="TokenTool" />
         <meta
           name="description"
-          content="TokenTool is an online tool to create and deploy your own ERC20 and Solana Tokens on many different blockchains such as Ethereum, BNB Smart Chain, Solana, BASE and more!"
+          content="TokenTool is an online tool to create and deploy your own Ethereum and Solana tokens on many different blockchains such as Base, BSC, Blast, and more."
         />
+        <meta name="keywords" content="Token, crypto, memecoins, ethereum, solana, base, blast, avalanche, BNB Smart Chain, Polygon, crypto token"></meta>
+        <meta name="robots" content="index, follow" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="language" content="English" />
 
         {/* <!-- Open Graph / Facebook --> */}
         <meta property="og:type" content="website" />
@@ -53,7 +57,7 @@ export default function RootLayout({
         />
         <meta property="twitter:image" content="/logo.png" />
       </head>
-      <body className="bg-white">
+      <body className="bg-[#FBFBFB]">
         <Providers>
           <Header />
           {children}
