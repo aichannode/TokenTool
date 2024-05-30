@@ -7,7 +7,13 @@ const nextConfig = {
         return config;
     },
     images: {
-        domains: ['tokentool.io'], // your CDN or image hosting domain
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'tokentool.io',
+                port: '',
+                pathname: '/**',
+            }]
     },
 };
 

@@ -48,14 +48,14 @@ export const menuList = [
 export const tokenInfoList = [
     {
         title: "Standard Token on EVM",
-        info: "Our most popular token, includes all standard features from ERC20 standard token. Including Base, Ethereum, Solana, Blast and many more!",
+        info: "Our most popular token, includes all standard features from ERC20 standard token. Including Base, Ethereum, Blast and many more!",
         utils: ["ERC20", "Supply limits", "Ownership", "Minting", "Burning", "Pausable"],
         router: "standard-token",
         icon: [EthereumIcon, BinanceIcon, PolygonIcon, BaseIcon, ArbitrumIcon, OptimismIcon, AvalancheIcon, BlastIcon]
     },
     {
         title: "Solana SPL Token",
-        info: "SPL Token is the standard for creating tokens on the solana blockchain, comes with all the standard functionability! Customize the name, symbol, and logo for your token and deploy in no time!",
+        info: "SPL Token is the standard for creating tokens on the solana blockchain, comes with all the standard functionability! Customize the name, symbol, and logo for your token and deploy!",
         utils: ["SPL Token", "Name", "Symbol", "Decimals", "Logo", "Metadata", "Metaplex"],
         router: "spl-token",
         icon: [SolanaIcon]

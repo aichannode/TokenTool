@@ -7,12 +7,12 @@ import Footer from "../components/Footer"
 export default function Home() {
   return (
     <main className="flex flex-col items-center  px-[20px] pt-[20px] mt-[60px] md:mt-[80px]">
-      <p className=" text-[30px] md:text-[50px] font-[700] text-black">
-        TokenTool
-      </p>
-      <p className="text-gray-500 font-[500] text-[14px] text-center md:text-[20px]">
-        Create your own token, in just 1 minute. Pick from our selection of tokens.
-      </p>
+      <h1 className=" text-[30px] md:text-[50px] font-[700] text-black">
+        Crypto Token Creator
+      </h1>
+      <h2 className="text-gray-500 font-[500] text-[14px] text-center md:text-[20px]">
+        Create your own crypto or meme token, in just 1 minute. Pick from our selection of tokens.
+      </h2>
 
       {
         tokenInfoList.map((item: any, index: number) => {

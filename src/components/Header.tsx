@@ -25,14 +25,14 @@ export default function Header() {
 
     return (
         <div className="fixed top-0 bg-white z-50 flex flex-row items-center justify-between px-[20px] md:px-[100px] w-full h-[60px] md:h-[80px] shadow-md md:shadow-xl">
-            <button className="flex gap-2 flex-row items-center" onClick={() => {
+            <div className="flex gap-2 flex-row items-center hover:cursor-pointer" onClick={() => {
                 handleHome()
             }}>
                 <Image src={LogoImg} className="w-[30px] h-[30px]" alt="logo" />
                 <p className="text-[24px]  text-gray-900 font-[700]">
                     TokenTool.io
                 </p>
-            </button>
+            </div>
             {
                 !isTabletOrMobile &&
                 <div className="flex flex-row items-center gap-10 ">
@@ -53,17 +53,17 @@ export default function Header() {
                 !isTabletOrMobile ?
                     <div></div>
                     :
-                    <button onClick={openDrawer}>
+                    <div className="focus:cursor-pointer" onClick={openDrawer}>
                         <Image src={HamburgerIcon} className="w-[20px] h-[20px]" alt="menu" />
-                    </button>
+                    </div>
             }
             {/* <EvmWalletConnectButton /> */}
 
             <Drawer open={open} onClose={closeDrawer}
                 className="p-4"
                 placeholder={""}
-                onPointerEnterCapture={() => { }}
-                onPointerLeaveCapture={() => { }}>
+                onPointerEnterCapture={null}
+                onPointerLeaveCapture={null}>
                 <div className="flex flex-col items-start gap-2 px-[20px]">
                     <button className="text-[18px] font-[500] mt-[60px]" onClick={() => {
                         router.push("/")

@@ -141,9 +141,9 @@ export default function StandardToken() {
       <p className="text-[30px] md:text-[40px] text-gray-900 font-[700]  mt-[20px]">
         {tokenInfoList[0].title}
       </p>
-      <p className="w-full md:w-[800px] text-[16px]  md:text-[18px] text-gray-500 font-[500] mt-[20px]">
+      <h2 className="w-full md:w-[800px] text-[16px]  md:text-[18px] text-gray-500 font-[500] mt-[20px]">
         Our most popular token, includes all standard features from ERC20 standard token. Including Base, Ethereum, Blast and many more!
-      </p>
+      </h2>
       {/* <div className="flex flex-wrap items-center gap-2 mt-[20px]">
                 {
                     tokenInfoList[0].utils.map((item, index) => {
@@ -331,18 +331,18 @@ export default function StandardToken() {
         <h2 className="text-gray-800 text-[15px]">
           Please note that some wallets won’t automatically show your token. You might have to import or unhide your custom tokens in the wallet settings.
         </h2>
+        <p></p>
         <h1 className="w-full text-gray-800 text-[15px] font-[700] text-center">
-          How to use EVM Standard token creator
+          How to use EVM Ethereum Standard token creator
         </h1>
         <h2 className="text-gray-800 text-[15px]">
-          1:
-          <span className="font-[700]">Connect Wallet</span> : Simply connect any supported wallet to our platform and you’ll be able to create your token in no time
+          1 <span className="font-[700]">Connect Wallet</span>: Simply connect any supported wallet to our platform and you’ll be able to create your token in no time
         </h2>
         <h2 className="text-gray-800 text-[15px]">
-          2: <span className="font-[700]">Add token details</span> : Add basic details about your tokens such as the name, symbol decimals, and supply
+          2 <span className="font-[700]">Add token details</span>: Add basic details about your tokens such as the name, symbol decimals, and supply
         </h2>
         <h2 className="text-gray-800 text-[15px]">
-          3:  <span className="font-[700]">Deploy</span> : Once deployed, your token will be available across the entire blockchain ecosystem
+          3  <span className="font-[700]">Deploy</span>: Once deployed, your token will be available across the entire blockchain ecosystem
         </h2>
       </div>
 

@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 // import { Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./web3-provider.tsx";
+import { ContextProvider } from "./web3-provider.tsx";
 import '@rainbow-me/rainbowkit/styles.css';
 import Header from "@/components/Header.tsx";
 // const inter = Inter({ subsets: ["latin"] });
@@ -21,21 +21,21 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* <!-- Primary Meta Tags --> */}
-        <title>Crypto Token Tool</title>
+        <title>Ethereum &amp; Solana Token Tool</title>
         <link rel="icon" type="image/png" href="/logo.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
         <link rel="icon" type="image/png" href="/logo.png" sizes="32x32" />
         <link rel="shortcut icon" href="/logo.png" />
 
-        <meta name="title" content="TokenTool" />
+        <meta name="title" content="Ethereum &amp; Solana Token Generator | TokenTool" />
         <meta
           name="description"
           content="TokenTool is an online tool to create and deploy your own Ethereum and Solana tokens on many different blockchains such as Base, BSC, Blast, and more."
         />
         <meta name="keywords" content="Token, crypto, memecoins, ethereum, solana, base, blast, avalanche, BNB Smart Chain, Polygon, crypto token"></meta>
         <meta name="robots" content="index, follow" />
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="language" content="English" />
+        <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
+
 
         {/* <!-- Open Graph / Facebook --> */}
         <meta property="og:type" content="website" />
@@ -58,10 +58,10 @@ export default function RootLayout({
         <meta property="twitter:image" content="/logo.png" />
       </head>
       <body className="bg-[#FBFBFB]">
-        <Providers>
+        <ContextProvider>
           <Header />
           {children}
-        </Providers>
+        </ContextProvider>
       </body>
     </html>
   );

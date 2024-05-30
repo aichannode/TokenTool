@@ -9,9 +9,7 @@ import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMintInstruction, getMinimu
 import { createCreateMetadataAccountV3Instruction, PROGRAM_ID } from '@metaplex-foundation/mpl-token-metadata';
 import StyledDropzone from "../../components/Dropzone";
 import { useStorageUpload } from "@thirdweb-dev/react";
-
-import { Metadata } from 'next';
-
+import { createSetAuthorityInstruction, AuthorityType } from '@solana/spl-token';
 
 
 export default function SplToken() {
@@ -35,8 +33,8 @@ export default function SplToken() {
   const [tokenDescription, setTokenDescription] = useState("");
   const [enableTokenDescription, setEnableTokenDescription] = useState(false);
 
-  const [freezeAuthority, setFreezeAuthority] = useState<boolean>(false);
-  const [mintAuthority, setMintAuthority] = useState<boolean>(false);
+  const [freezeAuthority, setFreezeAuthority] = useState<boolean>(true);
+  const [mintAuthority, setMintAuthority] = useState<boolean>(true);
   const [enableMetadata, setEnableMetadata] = useState<boolean>(true);
   const [mutable, setMutable] = useState<boolean>(false);
 
@@ -49,7 +47,6 @@ export default function SplToken() {
   }, [sliderValue])
 
   const { mutateAsync: upload } = useStorageUpload();
-
 
   const onClick = useCallback(async (form: any) => {
     const lamports = await getMinimumBalanceForRentExemptMint(connection);
@@ -88,7 +85,6 @@ export default function SplToken() {
       },
     );
 
-
     const createNewTokenTransaction = new Transaction().add(
       SystemProgram.createAccount({
         fromPubkey: publicKey!,
@@ -101,7 +97,7 @@ export default function SplToken() {
         mintKeypair.publicKey,  //mint address
         form.decimals, //Number of Decimals of New mint
         publicKey!, //Mint Authority
-        freezeAuthority ? publicKey : null,//Freeze Authority
+        !freezeAuthority ? publicKey : null,//Freeze Authority
         TOKEN_PROGRAM_ID),
       createAssociatedTokenAccountInstruction(
         publicKey!,//Payer 
@@ -120,13 +116,28 @@ export default function SplToken() {
         toPubkey: new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
         lamports: 0.001 * LAMPORTS_PER_SOL // Custom fee amount in lamports
       }),
-      createMetadataInstruction
+      createMetadataInstruction,
+      ...(mintAuthority ? [createSetAuthorityInstruction(
+        mintKeypair.publicKey, // Mint
+        publicKey!, // Current mint authority
+        AuthorityType.MintTokens,
+        null // New authority (null to remove minting capability)
+      )] : [])
     );
+    if (mintAuthority) {
+      createSetAuthorityInstruction(
+        mintKeypair.publicKey, // Mint
+        publicKey!, // Current mint authority
+        AuthorityType.MintTokens,
+        null // New authority (null to remove minting capability)
+      )
+    }
+
     let res = await sendTransaction(createNewTokenTransaction, connection, { signers: [mintKeypair] });
     setCreatedTx(res);
     setCreatedTokenAddress(mintKeypair.publicKey.toBase58());
     setOpen(true)
-  }, [publicKey, connection, sendTransaction, mutable, freezeAuthority]);
+  }, [publicKey, connection, sendTransaction, mutable, freezeAuthority, mintAuthority,]);
 
 
   const tokenNameValidation = (input: string) => {
@@ -189,8 +200,7 @@ export default function SplToken() {
       tokenNameValidation(tokenName) &&
       tokenSymbolValidation(symbol) &&
       decimalsValidation(decimal) &&
-      totalSupplyValidation(amount) &&
-      metaDataValidation(metadataImage)
+      totalSupplyValidation(amount)
     )
       return true
     else
@@ -432,7 +442,7 @@ export default function SplToken() {
           <div className="flex flex-row items-center justify-between">
             <div>
               <p className="text-gray-700 text-[14px]">
-                Enable Metaplex Metadata (Highly Recommended)
+                Enable Metaplex Metadata (Enabled)
               </p>
               <p className="text-gray-500 text-14px">
                 Registers your token on the Metaplex Protocol for visibility & discoverability.
@@ -441,7 +451,7 @@ export default function SplToken() {
             <Switch
               checked={enableMetadata}
               onChange={(e) => {
-                setEnableMetadata(e.target.checked)
+                setEnableMetadata(true)
               }}
               crossOrigin={() => { }}
               onPointerEnterCapture={() => { }}

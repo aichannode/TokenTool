@@ -14,7 +14,7 @@ export default function TokenPanel(props: any) {
     }
 
     return (
-        <div className="w-full md:w-[800px] flex flex-col items-start p-[20px] border-[1px] rounded-xl cursor-pointer mt-[20px] bg-white" onClick={handleToken}>
+        <div className="w-full md:w-[800px] flex flex-col items-start p-[20px] border-[1px] rounded-xl cursor-pointer mt-[20px] bg-white focus:cursor-pointer" onClick={handleToken}>
             <p className="w-full text-[20px] md:text-[24px] font-[700] text-center">
                 {title}
             </p>
