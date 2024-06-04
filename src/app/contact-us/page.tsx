@@ -1,5 +1,6 @@
 
 'use client';
+import Footer from "@/components/Footer";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 export default function ContactUs() {
 

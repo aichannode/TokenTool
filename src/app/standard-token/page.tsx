@@ -1,18 +1,20 @@
 "use client"
-import React, { useEffect, useState } from "react";
-import { chainInfoList, config, tokenInfoList } from "../../global/config"
-import { Select, Option, Slider, Dialog, DialogBody, DialogHeader, Button, DialogFooter } from "@material-tailwind/react";
-import { useAccount, useChainId, useReadContract, useSwitchChain, useWriteContract } from "wagmi";
+import React, { useCallback, useEffect, useState } from "react";
+import { addTokenToWallet, blockExplorers, chainInfoList, explorerName, priceList, tokenInfoList } from "../../global/config"
+import { Select, Option, Slider, Dialog, DialogBody, DialogHeader, Button, DialogFooter, Spinner } from "@material-tailwind/react";
+import { useAccount, useBalance, useChainId, useContractRead, useContractWrite, useSwitchNetwork, usePrepareContractWrite, useContractEvent, useWaitForTransaction } from "wagmi";
 import evmTokenContractData from "../../global/global";
 import { Address, formatUnits, parseUnits } from 'viem';
 import { stdTokenFactoryAbi } from "../../global/abi/stdTokenFactoryAbi";
 import { watchContractEvent } from "wagmi/actions";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
+import Footer from "@/components/Footer";
 
 export default function StandardToken() {
   const [decimal, setDecimal] = useState(0);
   const [sliderValue, setSliderValue] = useState<number>(100);
+  const [deployLoading, setDeployLoading] = useState<boolean>(false);
   const [tokenName, setTokenName] = useState<string>("");
   const [tokenNameValidateMsg, setTokenNameValidateMsg] = useState<string>("");
   const [tokenSymbol, setTokenSymbol] = useState<string>("");
@@ -23,19 +25,51 @@ export default function StandardToken() {
   const [totalSupplyValidationMsg, setTotalSupplyValidationMsg] = useState<string>("");
   const [flatFee, setFlatFee] = useState<bigint | undefined>();
   const [createdTx, setCreatedTx] = useState<string>("");
-  const [createTokenAddress, setCreatedTokenAddress] = useState<string>('');
+  const [createTokenAddress, setCreatedTokenAddress] = useState<string | undefined>('');
   const [open, setOpen] = useState<boolean>(false)
-  const { isConnected } = useAccount();
-  const { switchChain } = useSwitchChain();
-  const { writeContract } = useWriteContract();
+  const [balanceModalOpen, setBalanceModalOpen] = useState<boolean>(false)
+  const { isConnected, address } = useAccount();
+  const { switchNetwork } = useSwitchNetwork();
   const chainId = useChainId();
 
 
-  const result = useReadContract({
+  const result = useContractRead({
     abi: stdTokenFactoryAbi,
     address: evmTokenContractData[chainId]?.stdTokenFactoryAddress as Address,
     functionName: 'flatFee'
   });
+
+  const mybalance = useBalance({
+    address: address as Address,
+  })
+
+  const { config, error: prepareError, isError: isPrepareError, refetch: prepareRefetch } = usePrepareContractWrite({
+    chainId: chainId,
+    address: evmTokenContractData[chainId]?.stdTokenFactoryAddress as Address,
+    abi: stdTokenFactoryAbi,
+    functionName: 'create',
+    args: [
+      tokenName,
+      tokenSymbol,
+      decimals,
+      parseUnits(totalSupply.toString(), 18)
+    ],
+    value: flatFee,
+    onSuccess(data) {
+      setDeployLoading(false)
+    },
+    onError(error) {
+      setDeployLoading(false)
+    },
+  })
+
+  const { data, write, isLoading: isWriteLoading, isError } = useContractWrite(config);
+
+  useEffect(() => {
+    if (isError)
+      setDeployLoading(false)
+  }, [isError])
+
 
   useEffect(() => {
     if (result?.data) {
@@ -99,33 +133,60 @@ export default function StandardToken() {
       return false
   }
 
-  const handleCreateToken = () => {
-    if (!checkValidation())
-      return;
-    writeContract({
-      chainId: chainId,
-      abi: stdTokenFactoryAbi,
-      address: evmTokenContractData[chainId]?.stdTokenFactoryAddress as Address,
-      functionName: 'create',
-      args: [
-        tokenName,
-        tokenSymbol,
-        decimals,
-        parseUnits(totalSupply.toString(), 18)
-      ],
-      value: flatFee
-    })
+  const checkBalance = () => {
+    if (mybalance.data?.value != undefined) {
+      console.log("mybalance", parseFloat(formatUnits(mybalance.data?.value, 18)));
+      console.log("required balance", priceList[chainId as keyof typeof priceList].price);
+      if (parseFloat(formatUnits(mybalance.data?.value, 18)) < priceList[chainId as keyof typeof priceList].price)
+        return false
+    }
+    return true;
   }
 
-  const unwatch = watchContractEvent(config, {
+  const handleCreateToken = () => {
+    if (!checkBalance()) {
+      setBalanceModalOpen(true);
+      return;
+    }
+    if (!checkValidation())
+      return;
+
+    if (isPrepareError) {
+      console.log('Create fair launch error', prepareError?.message)
+      return;
+    }
+    setDeployLoading(true);
+    write?.()
+
+  }
+  const { isLoading } = useWaitForTransaction({
+    chainId: chainId,
+    confirmations: 10,
+    hash: data?.hash,
+    onSuccess(txData) {
+      console.log('hash:', data?.hash)
+      setDeployLoading(false);
+    },
+    onError(error) {
+      setDeployLoading(false);
+      console.log(`Create fairlaunch Error:`, error?.message)
+    },
+  })
+
+  const unwatch = useContractEvent({
     address: evmTokenContractData[chainId]?.stdTokenFactoryAddress as Address,
     abi: stdTokenFactoryAbi,
     eventName: 'TokenCreated',
-    onLogs(logs: any) {
+    listener(logs) {
+      setDeployLoading(false);
       setOpen(true);
       setCreatedTx(logs[0].transactionHash)
       setCreatedTokenAddress(logs[0].args["token"])
-      unwatch();
+      setTokenName("")
+      setTokenSymbol("")
+      setTotalSupply(0)
+      setDecimal(18)
+      unwatch?.();
     },
   })
 
@@ -136,8 +197,24 @@ export default function StandardToken() {
     setDecimals(decimalNum);
   }, [sliderValue])
 
+
+  const handleAddTokenToWallet = useCallback(async () => {
+    await addTokenToWallet({ createTokenAddress, tokenSymbol, decimal })
+  }, [createTokenAddress, tokenSymbol, decimal])
+
+
+
+  const openTokenOnScan = () => {
+    window.open(blockExplorers(chainId) + "address/" + createTokenAddress)
+  }
+
+  const openTransactionOnScan = () => {
+    window.open(blockExplorers(chainId) + "tx/" + createdTx)
+  }
+
+
   return (
-    <div className="flex flex-col items-center p-[20px] pt-[60px] md:pt-[80px] ">
+    <div className="flex flex-col items-center px-[20px] pt-[60px] md:pt-[80px] ">
       <p className="text-[30px] md:text-[40px] text-gray-900 font-[700]  mt-[20px]">
         {tokenInfoList[0].title}
       </p>
@@ -178,6 +255,7 @@ export default function StandardToken() {
                 setTokenName(e.target.value)
                 tokenNameValidation(e.target.value)
               }}
+              value={tokenName}
               type="text"
               placeholder="Shiba Inu"
               className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]" />
@@ -194,6 +272,7 @@ export default function StandardToken() {
                 setTokenSymbol(e.target.value)
                 tokenSymbolValidation(e.target.value)
               }}
+              value={tokenSymbol}
               type="text"
               placeholder="SHIB"
               className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]" />
@@ -222,7 +301,11 @@ export default function StandardToken() {
                 chainInfoList.map((item: any, index: number) => {
                   return <Option className="flex flex-row items-center gap-2" key={index} value={item.chainId}
                     onClick={() => {
-                      switchChain({ chainId: Number(item.chainId) })
+                      if (switchNetwork) {
+                        switchNetwork(Number(item.chainId));
+                      } else {
+                        console.error('Network switching is not available.');
+                      }
                     }}>
                     <Image src={item.icon} alt={item.icon} className="w-[30px] h-[30px] rounded-full" />
                     <p>
@@ -280,12 +363,13 @@ export default function StandardToken() {
           </p>
           <input
             // defaultValue={totalSupply}
+            value={totalSupply}
             onChange={(e: any) => {
               setTotalSupply(e.target.value)
               totalSupplyValidation(e.target.value)
             }}
             type="number"
-            placeholder="1000000000"
+            placeholder="1000"
             className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]" />
           <p className="text-red-500 text-[14px]">
             {
@@ -345,36 +429,42 @@ export default function StandardToken() {
           3  <span className="font-[700]">Deploy</span>: Once deployed, your token will be available across the entire blockchain ecosystem
         </h2>
       </div>
-
+      <Dialog className="bg-transparent flex flex-col justify-center items-center" open={deployLoading} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+        <Spinner onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} />
+      </Dialog>
       <Dialog open={open} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
         <DialogHeader placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
           Token creted successfully!
         </DialogHeader>
+        <DialogBody className="flex flex-col gap-2 font-[500] text-[18px]" placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+          <button className="w-full h-[50px] rounded-full bg-blue-800 text-white" onClick={openTokenOnScan}>
+            Open Token on {explorerName(chainId)}
+          </button>
+          <button className="w-full h-[50px] rounded-full bg-gray-100 text-black" onClick={handleAddTokenToWallet}>
+            Add Token to Wallet
+          </button>
+          <button className="w-full h-[50px] rounded-full bg-gray-100 text-black" onClick={openTransactionOnScan}>
+            Open Transaction on {explorerName(chainId)}
+          </button>
+          <button className="w-full h-[50px] rounded-full bg-red-800 text-white" onClick={() => setOpen(false)}>
+            Close
+          </button>
+        </DialogBody>
+      </Dialog>
+      <Dialog open={balanceModalOpen} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
         <DialogBody placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
-          <div className="flex flex-row items-center justify-between">
-            <div>
-              Created Token Address:
-            </div>
-            <div className="w-[350px] break-words">
-              {createTokenAddress}
-            </div>
-          </div>
-          <div className="flex flex-row items-center justify-between mt-[20px]">
-            <div>
-              Created Token Transaction:
-            </div>
-            <div className="w-[350px] break-words">
-              {createdTx}
-            </div>
-          </div>
+          You need at least {priceList[chainId as keyof typeof priceList].price} {priceList[chainId as keyof typeof priceList].currency} to create your token
         </DialogBody>
         <DialogFooter placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+
+
           <Button placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} variant="gradient" color="blue" onClick={() => {
-            setOpen(false)
+            setBalanceModalOpen(false)
           }}>
-            <span>Confirm</span>
+            <span>OK</span>
           </Button>
         </DialogFooter>
       </Dialog>
+      <Footer />
     </div>)
 }

@@ -57,7 +57,7 @@ export default function RootLayout({
         />
         <meta property="twitter:image" content="/logo.png" />
       </head>
-      <body>
+      <body className="bg-[#FBFBFB]">
         <ContextProvider>
           <Header />
           {children}

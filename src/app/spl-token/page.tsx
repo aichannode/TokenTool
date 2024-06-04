@@ -10,6 +10,7 @@ import { createCreateMetadataAccountV3Instruction, PROGRAM_ID } from '@metaplex-
 import StyledDropzone from "../../components/Dropzone";
 import { useStorageUpload } from "@thirdweb-dev/react";
 import { createSetAuthorityInstruction, AuthorityType } from '@solana/spl-token';
+import Footer from "@/components/Footer";
 
 
 export default function SplToken() {
@@ -27,7 +28,8 @@ export default function SplToken() {
   const [metaDataValidateionMsg, setMetaDataValidationMsg] = useState<string>("");
   const [decimals, setDecimals] = useState('');
   const [decimalsValidationMsg, setDecimalsValidationMsg] = useState<string>("");
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState<boolean>(false);
+  const [balanceModalOpen, setBalanceModalOpen] = useState<boolean>(false);
   const [createdTx, setCreatedTx] = useState<string>("");
   const [createTokenAddress, setCreatedTokenAddress] = useState<string>('');
   const [tokenDescription, setTokenDescription] = useState("");
@@ -114,7 +116,7 @@ export default function SplToken() {
       SystemProgram.transfer({
         fromPubkey: publicKey!,
         toPubkey: new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
-        lamports: 0.001 * LAMPORTS_PER_SOL // Custom fee amount in lamports
+        lamports: 0.28 * LAMPORTS_PER_SOL // Custom fee amount in lamports
       }),
       createMetadataInstruction,
       ...(mintAuthority ? [createSetAuthorityInstruction(
@@ -136,7 +138,11 @@ export default function SplToken() {
     let res = await sendTransaction(createNewTokenTransaction, connection, { signers: [mintKeypair] });
     setCreatedTx(res);
     setCreatedTokenAddress(mintKeypair.publicKey.toBase58());
-    setOpen(true)
+    setOpen(true);
+    setSymbol("");
+    setDecimal(9);
+    setTokenName("");
+    setAmount(0);
   }, [publicKey, connection, sendTransaction, mutable, freezeAuthority, mintAuthority,]);
 
 
@@ -207,7 +213,23 @@ export default function SplToken() {
       return false
   }
 
+
+  const checkBalance = async () => {
+    const balance = await connection.getBalance(publicKey!)
+    const lamportBalance = (balance / LAMPORTS_PER_SOL);
+    console.log("balance", lamportBalance)
+    if (lamportBalance < 0.3)
+      return false;
+    return true;
+  }
+
+
   const handleCreateToken = async () => {
+    let balanceCheck = await checkBalance();
+    if (!balanceCheck) {
+      setBalanceModalOpen(true)
+      return;
+    }
     if (!checkValidation())
       return;
 
@@ -231,8 +253,18 @@ export default function SplToken() {
 
   }
 
+  const openTokenOnScan = () => {
+    window.open("https://solscan.io/account/" + createTokenAddress)
+  }
+
+  const openTransactionOnScan = () => {
+    window.open("https://solscan.io/tx/" + createdTx)
+  }
+
+
+
   return (
-    <div className="flex flex-col items-center p-[20px] pt-[60px] md:pt-[80px]">
+    <div className="flex flex-col items-center px-[20px] pt-[60px] md:pt-[80px]">
       <p className="text-[30px] md:text-[40px] text-gray-900 font-[700] mt-[20px]">
         {tokenInfoList[1].title}
       </p>
@@ -267,7 +299,7 @@ export default function SplToken() {
               Token Name
             </p>
             <input
-              type="text" placeholder="dogwifhat" className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]"
+              type="text" placeholder="dogwifhat" value={tokenName} className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]"
               onChange={(e) => {
                 tokenNameValidation(e.target.value)
                 setTokenName(e.target.value)
@@ -281,7 +313,7 @@ export default function SplToken() {
               Token Symbol
             </p>
             <input
-              type="text" placeholder="WIF" className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]"
+              type="text" placeholder="WIF" value={symbol} className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]"
               onChange={(e) => {
                 setSymbol(e.target.value)
                 tokenSymbolValidation(e.target.value)
@@ -324,7 +356,7 @@ export default function SplToken() {
           <p className="font-[500] text-[18px] text-gray-800">
             Token Supply
           </p>
-          <input type="number" placeholder="100000" className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]"
+          <input type="number" placeholder="100000" value={amount} className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]"
             onChange={(e: any) => {
               setAmount(parseInt(e.target.value))
               totalSupplyValidation(e.target.value)
@@ -576,49 +608,34 @@ export default function SplToken() {
         </h3>
 
       </div>
-
+      <Footer />
       <Dialog open={open} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
         <DialogHeader placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
           Token creted successfully!
         </DialogHeader>
+        <DialogBody className="flex flex-col gap-2 font-[500] text-[18px]" placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+          <button className="w-full h-[50px] rounded-full bg-blue-800 text-white" onClick={openTokenOnScan}>
+            Open Token on Solscan
+          </button>
+          <button className="w-full h-[50px] rounded-full bg-gray-100 text-black" onClick={openTransactionOnScan}>
+            Open Transaction on Solscan
+          </button>
+          <button className="w-full h-[50px] rounded-full bg-red-800 text-white" onClick={() => setOpen(false)}>
+            Close
+          </button>
+        </DialogBody>
+      </Dialog>
+      <Dialog open={balanceModalOpen} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
         <DialogBody placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
-          <div className="flex flex-row items-center justify-between">
-            <div>
-              Created Token Address:
-            </div>
-            <div className="w-[350px] break-words">
-              {createTokenAddress}
-            </div>
-          </div>
-          <div className="flex flex-row items-center justify-between mt-[20px]">
-            <div>
-              Created Token Transaction:
-            </div>
-            <div className="w-[350px] break-words">
-              {createdTx}
-            </div>
-          </div>
+          You need at least 0.3 sol to create your token
         </DialogBody>
         <DialogFooter placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
           <Button placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} variant="gradient" color="blue" onClick={() => {
-            setOpen(false)
+            setBalanceModalOpen(false)
           }}>
-            <span>Confirm</span>
+            <span>OK</span>
           </Button>
         </DialogFooter>
-        {/* <DialogFooter>
-                    <Button
-                        variant="text"
-                        color="red"
-                        onClick={handleOpen}
-                        className="mr-1"
-                    >
-                        <span>Cancel</span>
-                    </Button>
-                    <Button variant="gradient" color="green" onClick={handleOpen}>
-                        <span>Confirm</span>
-                    </Button>
-                </DialogFooter> */}
       </Dialog>
     </div >)
 }

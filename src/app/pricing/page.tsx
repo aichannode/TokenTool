@@ -1,4 +1,5 @@
 "use client";
+import Footer from "@/components/Footer";
 import { TABLE_HEAD, TABLE_ROWS } from "@/global/config";
 import { Card, Typography } from "@material-tailwind/react";
 import Image from "next/image";
@@ -76,5 +77,6 @@ export default function Pricing() {
                     </tbody>
                 </table>
             </Card>
+            <Footer />
         </div>)
 }

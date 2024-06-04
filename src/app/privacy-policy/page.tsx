@@ -1,7 +1,8 @@
+import Footer from "@/components/Footer";
 
 export default function ContactUs() {
   return (
-    <div className="min-h-screen w-full flex flex-col items-center py-[60px] md:py-[80px] px-[20px]">
+    <div className="min-h-screen w-full flex flex-col items-center pt-[60px] md:pt-[80px] px-[20px]">
       <h1 className="text-[30px] md:text-[40px] text-gray-900 font-[700]  mt-[20px]">
         Privacy Policy
       </h1>
@@ -66,6 +67,7 @@ export default function ContactUs() {
           </h4>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
