@@ -237,10 +237,10 @@ export default function StandardToken() {
       </div>
       <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-gray-900 text-[24px] font-[700]">
+          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
             Token Information
           </p>
-          <p className="text-gray-800 text-[20px]">
+          <p className="text-gray-800 text-[16px] md:text-[20px]">
             Basic Information about your token
           </p>
         </div>
@@ -349,10 +349,10 @@ export default function StandardToken() {
 
       <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-gray-900 text-[24px] font-[700]">
+          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
             Token Supply
           </p>
-          <p className="text-gray-800 text-[20px]">
+          <p className="text-gray-800 text-[16px] md:text-[20px]">
             Let's set the supply options for your token.
           </p>
         </div>
@@ -385,7 +385,7 @@ export default function StandardToken() {
 
       <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-gray-900 text-[24px] font-[700]">
+          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
             Deploy Token
           </p>
         </div>

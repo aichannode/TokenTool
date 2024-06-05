@@ -7,6 +7,8 @@ import OptimismIcon from "@/assets/icons/optimism.png"
 import ArbitrumIcon from "@/assets/icons/arbitrum.png"
 import AvalancheIcon from "@/assets/icons/avalanche.png"
 import BlastIcon from "@/assets/icons/blast.png"
+import ToolIcon from "@/assets/icons/tools.svg"
+
 
 export const menuList = [
     {
@@ -18,6 +20,11 @@ export const menuList = [
         icon: SolanaIcon,
         name: "Solana Token Creator",
         router: "/spl-token"
+    },
+    {
+        icon: ToolIcon,
+        name: "Liquidity Manager",
+        router: "/liquidity-manager"
     },
     {
         icon: "",

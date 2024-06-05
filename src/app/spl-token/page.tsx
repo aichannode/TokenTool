@@ -285,10 +285,10 @@ export default function SplToken() {
       </div>
       <div className="border-[1px] border-[#AAA] bg-white rounded-xl w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-gray-900 text-[24px] font-[700]">
+          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
             Token Information
           </p>
-          <p className="text-gray-800 text-[20px]">
+          <p className="text-gray-800 text-[16px] md:text-[20px]">
             Basic Information about your token
           </p>
         </div>
@@ -371,10 +371,10 @@ export default function SplToken() {
 
       <div className="border-[1px] border-[#AAA] bg-white rounded-xl w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-gray-900 text-[24px] font-[700]">
+          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
             Additional Metadata
           </p>
-          <p className="text-gray-800 text-[20px]">
+          <p className="text-gray-800 text-[16px] md:text-[20px]">
             Additional details about your token.
           </p>
         </div>
@@ -420,10 +420,10 @@ export default function SplToken() {
 
       <div className="border-[1px] border-[#AAA] bg-white rounded-xl w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-gray-900 text-[24px] font-[700]">
+          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
             Options
           </p>
-          <p className="text-gray-800 text-[20px]">
+          <p className="text-gray-800 text-[16px] md:text-[20px]">
             Extra options for your token.
           </p>
         </div>
@@ -516,10 +516,10 @@ export default function SplToken() {
 
       <div className="border-[1px] border-[#AAA] bg-white rounded-xl w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-gray-900 text-[24px] font-[700]">
+          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
             Deploy Token
           </p>
-          <p className="text-gray-800 text-[20px]">
+          <p className="text-gray-800 text-[16px] md:text-[20px]">
             Ready to deploy?
           </p>
         </div>
