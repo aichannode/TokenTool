@@ -66,32 +66,32 @@ export default function LiquidityManager() {
                             </p>
                         </div>
                         <div className="w-full border-[1px] " />
-                        <div className="flex flex-row justify-center gap-3 p-[20px]">
-                            <button className="w-[130px] h-[40px] bg-blue-600 rounded-md"
+                        <div className="flex flex-col md:flex-row justify-center gap-3 p-[20px]">
+                            <button className="w-full md:w-[130px] h-[40px] bg-blue-600 rounded-md"
                                 onClick={handleCreateLiquidity}>
                                 <p className="text-white text-[16px] font-700">
                                     Create Pool
                                 </p>
                             </button>
-                            <button className="w-[130px] h-[40px] bg-blue-600 rounded-md"
+                            <button className="w-full md:w-[130px] h-[40px] bg-blue-600 rounded-md"
                                 onClick={handleCreateLiquidity}>
                                 <p className="text-white text-[16px] font-700">
                                     Add Liquidity
                                 </p>
                             </button>
-                            <button className="w-[130px] h-[40px] bg-blue-600 rounded-md"
+                            <button className="w-full md:w-[130px] h-[40px] bg-blue-600 rounded-md"
                                 onClick={handleCreateLiquidity}>
                                 <p className="text-white text-[16px] font-700">
                                     Remove Liquidty
                                 </p>
                             </button>
-                            <button className="w-[130px] h-[40px] bg-blue-600 rounded-md"
+                            <button className="w-full md:w-[130px] h-[40px] bg-blue-600 rounded-md"
                                 onClick={handleCreateLiquidity}>
                                 <p className="text-white text-[16px] font-700">
                                     Burn Liquidity
                                 </p>
                             </button>
-                            <button className="w-[130px] h-[40px] bg-blue-600 rounded-md"
+                            <button className="w-full md:w-[130px] h-[40px] bg-blue-600 rounded-md"
                                 onClick={handleCreateLiquidity}>
                                 <p className="text-white text-[16px] font-700">
                                     Lock Liquidity
