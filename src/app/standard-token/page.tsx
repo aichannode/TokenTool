@@ -1,7 +1,7 @@
 "use client"
 import React, { useCallback, useEffect, useState } from "react";
 import { addTokenToWallet, blockExplorers, chainInfoList, explorerName, priceList, tokenInfoList } from "../../global/config"
-import { Select, Option, Slider, Dialog, DialogBody, DialogHeader, Button, DialogFooter, Spinner } from "@material-tailwind/react";
+import { Select, Option, Slider, Dialog, DialogBody, DialogHeader, Button, DialogFooter, Spinner, Switch } from "@material-tailwind/react";
 import { useAccount, useBalance, useChainId, useContractRead, useContractWrite, useSwitchNetwork, usePrepareContractWrite, useContractEvent, useWaitForTransaction } from "wagmi";
 import evmTokenContractData from "../../global/global";
 import { Address, formatUnits, parseUnits } from 'viem';
@@ -14,8 +14,10 @@ import Footer from "@/components/Footer";
 export default function StandardToken() {
   const [decimal, setDecimal] = useState(0);
   const [sliderValue, setSliderValue] = useState<number>(100);
+  const [sliderSupplyValue, setSliderSupplyValue] = useState<number>(100);
   const [deployLoading, setDeployLoading] = useState<boolean>(false);
   const [tokenName, setTokenName] = useState<string>("");
+  const [liquidityAmount, setLiquidityAmount] = useState<number>(0);
   const [tokenNameValidateMsg, setTokenNameValidateMsg] = useState<string>("");
   const [tokenSymbol, setTokenSymbol] = useState<string>("");
   const [tokenSymbolValidateMsg, setTokenSymbolValidateMsg] = useState<string>("");
@@ -30,7 +32,12 @@ export default function StandardToken() {
   const [balanceModalOpen, setBalanceModalOpen] = useState<boolean>(false)
   const { isConnected, address } = useAccount();
   const { switchNetwork } = useSwitchNetwork();
+  const [addLiquidityOption, setAddLiquidityOption] = useState<boolean>(false);
   const chainId = useChainId();
+
+  useEffect(() => {
+    console.log("🚀 ~ StandardToken ~ addLiquidityOption:", addLiquidityOption)
+  }, [addLiquidityOption])
 
 
   const result = useContractRead({
@@ -386,13 +393,192 @@ export default function StandardToken() {
       <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
           <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
+            Liquidity Options
+          </p>
+          <p className="text-gray-800 text-[16px] md:text-[20px]">
+            Quickly add liquidity for your token.
+          </p>
+        </div>
+        <div className="w-full border-[1px] " />
+        <div className="p-[20px] flex flex-row items-center justify-between">
+          <div className="flex flex-col items-start">
+            <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+              Add Initial Liquidity
+            </p>
+            <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+              Automatically create and fund the liqudity pool, this will allow users to buy your token.
+            </p>
+          </div>
+          <Switch
+            checked={addLiquidityOption}
+            onChange={(e) => {
+              console.log("🚀 ~ StandardToken ~ e:", e)
+              setAddLiquidityOption(!addLiquidityOption)
+            }}
+            crossOrigin={() => { }}
+            onPointerEnterCapture={() => { }}
+            onPointerLeaveCapture={() => { }} />
+        </div>
+        {
+          addLiquidityOption &&
+          <div>
+            <div className="w-full border-[1px] " />
+            <div className="p-[20px]">
+              <div className="flex flex-col items-start">
+                <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+                  Token Paring & Funding
+                </p>
+                <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+                  Pair a percentage of your token supply with BNB to fundthe liquidity pool, We recommend pairing at least 10% of your token supply with at least 1 BNB.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 mt-[20px]">
+                <div className=" flex flex-row items-center w-full">
+                  <p className="w-full">
+                    Token Supply (%)
+                  </p>
+                  <p className="w-full">
+                    BNB Amount
+                  </p>
+                </div>
+                <div className="w-full flex flex-row items-center gap-2">
+                  <div className="flex flex-row items-center gap-2 w-full">
+                    <Slider
+                      value={sliderSupplyValue}
+                      onChange={(e) => {
+                        setSliderSupplyValue(parseInt(e.target.value));
+                      }}
+                      color="blue"
+                      placeholder={""}
+                      onPointerEnterCapture={() => { }}
+                      onPointerLeaveCapture={() => { }} />
+                    <p className="text-[16px] md:text-[20px]">
+                      {sliderSupplyValue}%
+                    </p>
+                  </div>
+                  <input
+                    onChange={(e: any) => {
+                      setLiquidityAmount(parseInt(e.target.value))
+                    }}
+                    value={liquidityAmount}
+                    type="number"
+                    className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]" />
+                </div>
+
+              </div>
+              <div className="flex flex-row items-center gap-2 mt-[20px]">
+                <div className="flex flex-col items-end w-full p-[10px] border-[1px] rounded-xl">
+                  <div className="flex flex-col items-end">
+                    <p className="text-[18px] text-gray-800">
+                      Token
+                    </p>
+                    <p className="text-[18px] text-gray-800">
+                      43,000
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
+                  <div className="flex flex-col items-start">
+                    <p className="text-[18px] text-gray-800">
+                      ETH
+                    </p>
+                    <p className="text-[18px] text-gray-800">
+                      19.90
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-[20px] text-gray-700 text-[16px]">
+                Based on the selected options and values above, your token will launch with the following initial parameters, including the starting market cap and the starting price of your token.
+              </div>
+              <div className="flex flex-row items-center gap-2 mt-[20px]">
+                <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
+                  <div className="flex flex-col items-start">
+                    <p className="text-[16px] text-gray-900">
+                      Launch Market Cap
+                    </p>
+                    <p className="text-[16px] text-gray-900">
+                      46.28 ETH
+                      <span className="text-[14px]">
+                        (~176,248.28 USD)
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
+                  <div className="flex flex-col items-start">
+                    <p className="text-[16px] text-gray-900">
+                      Launch Token Price
+                    </p>
+                    <p className="text-[16px] text-gray-900">
+                      0.000463ETH
+                      <span className="text-[14px]">
+                        (~1.76 USD)
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full border-[1px] " />
+            <div className="p-[20px]">
+              <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+                DEX Exchange
+              </p>
+              <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+                We'll use the selected DEX to create your liquidity pair and seed the initial pool.
+              </p>
+              <div className="mt-[20px]">
+                <Select
+                  selected={(element) =>
+                    element &&
+                    React.cloneElement(element, {
+                      disabled: true,
+                      className:
+                        "flex items-center opacity-100 px-0 gap-2 pointer-events-none",
+                    })
+                  }
+                  value={chainId.toString()} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+                  <Option className="flex flex-row items-center gap-2"
+                    onClick={() => {
+                    }}>
+                    <p>
+                      SushiSwap V2
+                    </p>
+                  </Option>
+                  <Option className="flex flex-row items-center gap-2"
+                    onClick={() => {
+                    }}>
+                    <p>
+                      Uniswap V2
+                    </p>
+                  </Option>
+                </Select >
+              </div>
+            </div>
+            <div className="w-full border-[1px] " />
+            <div className="p-[20px]">
+              <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+                Liquidity Action & Ownership
+              </p>
+              <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+                By default, the liquidity will be sent to you. However, you can choose to burn or lock the liquidity. We recommend burning the liquidity, or locking for at least 1 year.
+              </p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
+        <div className="p-[20px]">
+          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
             Deploy Token
           </p>
         </div>
         <div className="w-full border-[1px] " />
         <div className="p-[20px]">
           <p className="text-center text-gray-900 text-[18px]">
-            {flatFee !== undefined ? formatUnits(flatFee, 18) : 'N/A'} {evmTokenContractData[chainId].currencyName}
+            {flatFee !== undefined ? formatUnits(flatFee, 18) : '0'} {evmTokenContractData[chainId].currencyName}
           </p>
         </div>
         <div className="w-full border-[1px] " />
@@ -456,8 +642,6 @@ export default function StandardToken() {
           You need at least {priceList[chainId as keyof typeof priceList].price} {priceList[chainId as keyof typeof priceList].currency} to create your token
         </DialogBody>
         <DialogFooter placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
-
-
           <Button placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} variant="gradient" color="blue" onClick={() => {
             setBalanceModalOpen(false)
           }}>

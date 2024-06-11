@@ -1,7 +1,7 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { tokenInfoList } from "../../global/config"
-import { Slider, Switch, Dialog, DialogBody, DialogHeader, Button, DialogFooter } from "@material-tailwind/react";
+import { Slider, Dialog, DialogBody, DialogHeader, Button, DialogFooter, Switch, Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
@@ -10,20 +10,23 @@ import { createCreateMetadataAccountV3Instruction, PROGRAM_ID } from '@metaplex-
 import StyledDropzone from "../../components/Dropzone";
 import { useStorageUpload } from "@thirdweb-dev/react";
 import { createSetAuthorityInstruction, AuthorityType } from '@solana/spl-token';
+import PlusIcon from "@/assets/icons/plug.svg";
 import Footer from "@/components/Footer";
+import { fetchSolPrice } from "@/global/service";
 
 
 export default function SplToken() {
   const [decimal, setDecimal] = useState(0);
   const [sliderValue, setSliderValue] = useState<number>(100);
+  const [sliderSupplyValue, setSliderSupplyValue] = useState<number>(100);
   const { connection } = useConnection();
   const { publicKey, sendTransaction, connected } = useWallet();
-  const [tokenName, setTokenName] = useState('')
+  const [tokenName, setTokenName] = useState('');
   const [tokenNameValidateMsg, setTokenNameValidateMsg] = useState<string>("");
   const [symbol, setSymbol] = useState('')
   const [tokenSymbolValidateMsg, setTokenSymbolValidateMsg] = useState<string>("");
   const [metadataImage, setMetadataImage] = useState("");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState<number>(1000);
   const [totalSupplyValidationMsg, setTotalSupplyValidationMsg] = useState<string>("");
   const [metaDataValidateionMsg, setMetaDataValidationMsg] = useState<string>("");
   const [decimals, setDecimals] = useState('');
@@ -40,7 +43,47 @@ export default function SplToken() {
   const [enableMetadata, setEnableMetadata] = useState<boolean>(true);
   const [mutable, setMutable] = useState<boolean>(false);
 
+  const [addLiquidityOption, setAddLiquidityOption] = useState<boolean>(false);
+  const [tokenAmount, setTokenAmount] = useState<number>(0);
+  const [solAmount, setSolAmount] = useState<number>(2);
+  const [launchMarketcap, setLaunchMarketCap] = useState<number>(0);
+  const [launchMarketcapUSD, setLaunchMarketCapUSD] = useState<number>(0);
+  const [launchTokenPrice, setLaunchTokenPrice] = useState<number>(0)
+  const [launchTokenPriceUSD, setLaunchTokenPriceUSD] = useState<number>(0);
 
+  const data = [
+    {
+      label: "None",
+      value: "none",
+      desc: `Liquidity will be locked for the duration you select below. Your locked liquidity will show up in the Liquidity Manager section.`,
+    },
+    {
+      label: "Burn",
+      value: "burn",
+      desc: `Liquidity will be burned, locking the initial liquidity forever. Once the liquidity is burned, it can never be recovered in any way.`,
+    },
+    {
+      label: "Lock",
+      value: "lock",
+      desc: `Liquidity will be sent to your wallet. You will retain full ownership and control of the LP.`,
+    },
+  ];
+
+
+  useEffect(() => {
+    let tmpTokenAmount = Math.floor(amount / 100 * sliderSupplyValue)
+    setTokenAmount(tmpTokenAmount)
+    let tmpMarketCap = solAmount / sliderSupplyValue * 100 as number;
+    let tmpTokenPrice = solAmount / tmpTokenAmount as number;
+    setLaunchMarketCap(tmpMarketCap);
+    setLaunchTokenPrice(tmpTokenPrice);
+    const calculateLaunchMarketCap = async () => {
+      let res = await fetchSolPrice();
+      setLaunchMarketCapUSD(Math.floor(res.data.Price * 100) / 100 * tmpMarketCap);
+      setLaunchTokenPriceUSD(Math.floor(res.data.Price * 100) / 100 * tmpTokenPrice);
+    }
+    calculateLaunchMarketCap();
+  }, [sliderSupplyValue, amount, solAmount]);
 
   useEffect(() => {
     let decimalNum = parseInt((sliderValue / 100 * 9).toFixed(0));
@@ -511,7 +554,166 @@ export default function SplToken() {
               onPointerLeaveCapture={() => { }} />
           </div>
         </div>
+        <div className="w-full border-[1px] " />
+        <div className="p-[20px]">
+          <div className="flex flex-row items-center justify-between">
+            <div>
+              <p className="text-gray-700 text-[14px]">
+                Add Initial Liquidity
+              </p>
+              <p className="text-gray-500 text-14px">
+                Automatically create and fund the liqudity pool, this will allow users to buy your token.
+              </p>
+            </div>
+            <Switch
+              checked={addLiquidityOption}
+              onChange={(e) => {
+                setAddLiquidityOption(e.target.checked)
+              }}
+              crossOrigin={() => { }}
+              onPointerEnterCapture={() => { }}
+              onPointerLeaveCapture={() => { }} />
+          </div>
+        </div>
+        {
+          addLiquidityOption &&
+          <div>
+            <div className="w-full border-[1px] " />
+            <div className="p-[20px]">
+              <div className="flex flex-col items-start">
+                <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+                  Token Paring & Funding
+                </p>
+                <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+                  Pair a percentage of your token supply with SOL to fund the liquidity pool, We recommend pairing at least 10% of your token supply with at least 1SOL.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 mt-[20px]">
+                <div className=" flex flex-row items-center w-full">
+                  <p className="w-full">
+                    Token Supply (%)
+                  </p>
+                  <p className="w-full">
+                    SOL Amount
+                  </p>
+                </div>
+                <div className="w-full flex flex-row items-center gap-2">
+                  <div className="flex flex-row items-center gap-2 w-full">
+                    <Slider
+                      value={sliderSupplyValue}
+                      onChange={(e) => {
+                        setSliderSupplyValue(parseInt(e.target.value));
+                      }}
+                      color="blue"
+                      placeholder={""}
+                      onPointerEnterCapture={() => { }}
+                      onPointerLeaveCapture={() => { }} />
+                    <p className="text-[16px] md:text-[20px]">
+                      {sliderSupplyValue}%
+                    </p>
+                  </div>
+                  <input
+                    onChange={(e: any) => {
+                      setSolAmount(parseFloat(e.target.value))
+                    }}
+                    value={solAmount}
+                    type="number"
+                    className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]" />
+                </div>
 
+              </div>
+              <div className="flex flex-row items-center gap-2 mt-[20px]">
+                <div className="flex flex-col items-end w-full p-[10px] border-[1px] rounded-xl">
+                  <div className="flex flex-col items-end">
+                    <p className="text-[18px] text-gray-800">
+                      Token
+                    </p>
+                    <p className="text-[18px] text-gray-800">
+                      {tokenAmount}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
+                  <div className="flex flex-col items-start">
+                    <p className="text-[18px] text-gray-800">
+                      SOL
+                    </p>
+                    <p className="text-[18px] text-gray-800">
+                      {solAmount}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-[20px] text-gray-700 text-[16px]">
+                Based on the selected options and values above, your token will launch with the following initial parameters, including the starting market cap and the starting price of your token.
+              </div>
+              <div className="flex flex-row items-center gap-2 mt-[20px]">
+                <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
+                  <div className="flex flex-col items-start">
+                    <p className="text-[16px] text-gray-900">
+                      Launch Market Cap
+                    </p>
+                    <p className="text-[16px] text-gray-900">
+                      {launchMarketcap} SOL
+                      <span className="text-[14px]">
+                        (~ {launchMarketcapUSD} USD)
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
+                  <div className="flex flex-col items-start">
+                    <p className="text-[16px] text-gray-900">
+                      Launch Token Price
+                    </p>
+                    <p className="text-[16px] text-gray-900">
+                      {launchTokenPrice} SOL
+                      <span className="text-[14px]">
+                        (~{launchTokenPriceUSD} USD)
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full border-[1px] " />
+            <div className="p-[20px]">
+              <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+                DEX Exchange
+              </p>
+              <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+                We'll use the Raydium to create your liquidity pair and seed the initial pool.
+              </p>
+            </div>
+            <div className="w-full border-[1px] " />
+            <div className="p-[20px]">
+              <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+                Liquidity Action & Ownership
+              </p>
+              <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+                By default, the liquidity will be sent to you. However, you can choose to burn or lock the liquidity. We recommend burning the liquidity, or locking for at least 1 year.
+              </p>
+              <div className="mt-[20px]">
+                <Tabs value="none">
+                  <TabsHeader placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+                    {data.map(({ label, value }) => (
+                      <Tab placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} key={value} value={value}>
+                        {label}
+                      </Tab>
+                    ))}
+                  </TabsHeader>
+                  <TabsBody placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+                    {data.map(({ value, desc }) => (
+                      <TabPanel key={value} value={value}>
+                        {desc}
+                      </TabPanel>
+                    ))}
+                  </TabsBody>
+                </Tabs>
+              </div>
+            </div>
+          </div>
+        }
       </div>
 
       <div className="border-[1px] border-[#AAA] bg-white rounded-xl w-full md:w-[800px] mt-[20px]">
@@ -553,7 +755,6 @@ export default function SplToken() {
         </h1>
         <h3 className="text-gray-800 text-[15px]">
           Effortlessly create your Solana SPL Token with our 6+4 step process – no coding required.
-
         </h3>
         <h3 className="text-gray-800 text-[15px]">
           Customize your Solana Token exactly the way you envision it. It takes 1  minute, at an affordable cost.

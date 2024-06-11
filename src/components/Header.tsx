@@ -3,7 +3,7 @@ import { menuList } from "../global/config";
 import { useMediaQuery } from "react-responsive";
 import HamburgerIcon from "@/assets/icons/hamburger.svg"
 import { useState } from "react";
-import { Drawer } from "@material-tailwind/react";
+import { Drawer, } from "@material-tailwind/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from 'next/link'
