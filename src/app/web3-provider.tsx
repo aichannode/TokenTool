@@ -117,11 +117,11 @@ const queryClient = new QueryClient();
 
 
 export function WalletContextProvider({ children }: { children: React.ReactNode }) {
-  const network = WalletAdapterNetwork.Mainnet;
-  // const network = WalletAdapterNetwork.Devnet;
+  // const network = WalletAdapterNetwork.Mainnet;
+  const network = WalletAdapterNetwork.Devnet;
   // const endpoint = clusterApiUrl('mainnet-beta')
-  // const endpoint = "https://devnet.helius-rpc.com/?api-key=27daa736-6d02-4ebd-b415-4c7842590e04";
-  const endpoint = "https://mainnet.helius-rpc.com/?api-key=27daa736-6d02-4ebd-b415-4c7842590e04";
+  const endpoint = "https://devnet.helius-rpc.com/?api-key=27daa736-6d02-4ebd-b415-4c7842590e04";
+  // const endpoint = "https://mainnet.helius-rpc.com/?api-key=27daa736-6d02-4ebd-b415-4c7842590e04";
   const solana_wallets = useMemo(() => [
     new CoinbaseWalletAdapter(),
     new PhantomWalletAdapter(),
@@ -131,6 +131,7 @@ export function WalletContextProvider({ children }: { children: React.ReactNode 
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => setMounted(true), []);
+
   return (
     <ThemeProvider>
       <ThirdwebProvider
