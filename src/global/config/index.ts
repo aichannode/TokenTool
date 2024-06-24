@@ -20,11 +20,11 @@ export const menuList = [
         name: "Solana Token Creator",
         router: "/spl-token"
     },
-    {
-        icon: ToolIcon,
-        name: "Liquidity Manager",
-        router: "/liquidity-manager"
-    },
+    // {
+    //     icon: ToolIcon,
+    //     name: "Liquidity Manager",
+    //     router: "/liquidity-manager"
+    // },
     {
         icon: "",
         name: "Pricing",

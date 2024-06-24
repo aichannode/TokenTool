@@ -20,6 +20,8 @@ const nextConfig = {
         nextPublicRainbowKitProjectID: '0223afa9d737c7dca5ee7da65f2b9e97',
         nextRaydiumCpSwapDevnet: 'CPMDWBwJDtYax9qW7AyRuVC19Cc4L4Vcy4n2BHAbHkCW',
         nextRaydiumCpSwapMainnet: 'CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C',
+        nextLiquidityLockerDevnet: '4ycA4x1FJdbFsa6XQZrDaCBBefaDDzZnQMubavi3jpEx',
+        nextLiquidityLockerMainnet: 'CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C',
         nextNftStorageApiKey: 'f07d1484.bb78513c38b54a3fa48b069b1ffaca1d'
     }
 };

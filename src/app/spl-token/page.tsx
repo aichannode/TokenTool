@@ -1,18 +1,18 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { tokenInfoList } from "../../global/config"
-import { Slider, Dialog, DialogBody, DialogHeader, Button, DialogFooter, Switch, Tabs, TabsHeader, TabsBody, Tab, TabPanel, Spinner } from "@material-tailwind/react";
+import { Slider, Dialog, DialogBody, DialogHeader, Button, DialogFooter, Switch, Tabs, TabsHeader, TabsBody, Tab, TabPanel, Spinner, Option, Select } from "@material-tailwind/react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useAnchorWallet, useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram, Transaction } from '@solana/web3.js';
-import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMintInstruction, getMinimumBalanceForRentExemptMint, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createMintToInstruction, getAssociatedTokenAddressSync, createBurnInstruction, getAccount, createSyncNativeInstruction } from '@solana/spl-token';
+import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMintInstruction, getMinimumBalanceForRentExemptMint, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createMintToInstruction, getAssociatedTokenAddressSync, createBurnInstruction, getAccount, createSyncNativeInstruction, createAccount, createTransferInstruction, getOrCreateAssociatedTokenAccount } from '@solana/spl-token';
 import { createCreateMetadataAccountV3Instruction, PROGRAM_ID } from '@metaplex-foundation/mpl-token-metadata';
 import StyledDropzone from "../../components/Dropzone";
 import { useStorageUpload } from "@thirdweb-dev/react";
 import { createSetAuthorityInstruction, AuthorityType } from '@solana/spl-token';
 import Footer from "@/components/Footer";
 import { fetchSolPrice } from "@/global/service";
-import { accountExist, getAmmConfigAddress, getAuthAddress, getOrcleAccountAddress, getPoolAddress, getPoolLpMintAddress, getPoolVaultAddress, useGetProgram } from "@/global/util";
+import { accountExist, getAmmConfigAddress, getAuthAddress, getOrcleAccountAddress, getPoolAddress, getPoolLpMintAddress, getPoolVaultAddress, getSeconds, useGetLiquidityProgram, useGetProgram } from "@/global/util";
 import { Program, BN } from "@coral-xyz/anchor";
 import { ASSOCIATED_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 
@@ -39,7 +39,7 @@ export default function SplToken() {
   const [createTokenAddress, setCreatedTokenAddress] = useState<string>('');
   const [tokenDescription, setTokenDescription] = useState("");
   const [enableTokenDescription, setEnableTokenDescription] = useState(false);
-  const [lpAction, setLpAction] = useState<String>("none" || 'burn' || 'lock');
+  const [lpAction, setLpAction] = useState<String>("none" || 'burn');
 
   const [freezeAuthority, setFreezeAuthority] = useState<boolean>(true);
   const [mintAuthority, setMintAuthority] = useState<boolean>(true);
@@ -56,34 +56,42 @@ export default function SplToken() {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>("");
   const [fixedFee, setFixedFee] = useState<boolean>(true);
+  const [feeAmount, setFeeAmount] = useState<number>(0.3);
+  // const [lockDurationAmount, setLockDurationAmount] = useState<number>(1);
+  // const [lockDuration, setLockDuration] = useState<"year" | "month" | "week" | "day">('year');
   const { connection } = useConnection();
 
   const { getProgram } = useGetProgram(connection, anchorWallet!)
+  const { getLiquidityProgram } = useGetLiquidityProgram(connection, anchorWallet!)
 
   const data = [
     {
       label: "None",
       value: "none",
-      desc: `Liquidity will be locked for the duration you select below. Your locked liquidity will show up in the Liquidity Manager section.`,
+      desc: `Liquidity will be sent to your wallet. You will retain full ownership and control of the LP.`,
     },
     {
       label: "Burn",
       value: "burn",
       desc: `Liquidity will be burned, locking the initial liquidity forever. Once the liquidity is burned, it can never be recovered in any way.`,
     },
-    {
-      label: "Lock",
-      value: "lock",
-      desc: `Liquidity will be sent to your wallet. You will retain full ownership and control of the LP.`,
-    },
+    // {
+    //   label: "Lock",
+    //   value: "lock",
+    //   desc: `Liquidity will be sent to your wallet. You will retain full ownership and control of the LP.`,
+    // },
   ];
 
 
   useEffect(() => {
+    if (!fixedFee) {
+      if (sliderSupplyValue > 95)
+        setSliderSupplyValue(95)
+    }
     let tmpTokenAmount = Math.floor(amount / 100 * sliderSupplyValue)
     setTokenAmount(tmpTokenAmount)
     let tmpMarketCap = Math.floor(solAmount / sliderSupplyValue * 100 * 100) / 100 as number;
-    let tmpTokenPrice = Math.floor(solAmount / tmpTokenAmount * 10000) / 10000 as number;
+    let tmpTokenPrice = Math.floor(solAmount / tmpTokenAmount * 100000) / 100000 as number;
     setLaunchMarketCap(tmpMarketCap);
     setLaunchTokenPrice(tmpTokenPrice);
     const calculateLaunchMarketCap = async () => {
@@ -92,13 +100,21 @@ export default function SplToken() {
       setLaunchTokenPriceUSD(Math.floor(res.data.Price * 100) / 100 * tmpTokenPrice);
     }
     calculateLaunchMarketCap();
-  }, [sliderSupplyValue, amount, solAmount]);
+  }, [sliderSupplyValue, amount, solAmount, fixedFee]);
 
   useEffect(() => {
     let decimalNum = parseInt((sliderValue / 100 * 9).toFixed(0));
     setDecimal(decimalNum);
     setDecimals(decimalNum.toString());
   }, [sliderValue])
+
+  useEffect(() => {
+    if (addLiquidityOption)
+      if (fixedFee)
+        setFeeAmount(0.3 + 0.3 + solAmount)
+      else
+        setFeeAmount(0.3 + solAmount)
+  }, [addLiquidityOption, fixedFee, solAmount])
 
   const { mutateAsync: upload } = useStorageUpload();
 
@@ -151,6 +167,118 @@ export default function SplToken() {
     }
   };
 
+  // const initializeLockAccount = async (program: Program<LockerManager>) => {
+  //   if (!publicKey) {
+  //     console.log("Please connect your wallet.");
+  //     return;
+  //   }
+  //   const [lockAccountPDA, _] = await PublicKey.findProgramAddress(
+  //     [Buffer.from("lock_account"), publicKey.toBuffer()],
+  //     program.programId
+  //   );
+
+  //   const initialTx = await program.methods
+  //     .initializeLockAccount()
+  //     .accounts({
+  //       lockAccount: lockAccountPDA,
+  //       owner: publicKey!,
+  //       systemProgram: SystemProgram.programId,
+  //     }).transaction()
+
+  //   return { lockAccount: lockAccountPDA, tx: initialTx };
+  // }
+
+  // const lockLPTokens = async (
+  //   tokenMintAddress: string,
+  // ) => {
+  //   if (!publicKey) {
+  //     console.log("Please connect your wallet.");
+  //     return;
+  //   }
+  //   try {
+  //     const mint = new PublicKey(tokenMintAddress);
+  //     // Get the token account for the LP token
+  //     const ownerTokenAccount = await getAssociatedTokenAddress(mint, publicKey);
+  //     const accountInfo = await connection.getTokenAccountBalance(ownerTokenAccount);
+  //     const lockTime = getSeconds(lockDurationAmount, lockDuration);
+  //     const liquidityProgram = getLiquidityProgram()
+
+  //     const fromAssociatedTokenAddress = await getAssociatedTokenAddress(
+  //       mint,
+  //       publicKey
+  //     );
+  //     console.log("🚀 ~ SplToken ~ fromAssociatedTokenAddress:", fromAssociatedTokenAddress.toBase58())
+
+  //     // Check if the associated token account already exists
+  //     const fromTokenAccount = await connection.getAccountInfo(fromAssociatedTokenAddress);
+  //     if (!fromTokenAccount) {
+  //       console.log("Token account not exist");
+  //     }
+
+  //     // Create toTokenAccount with a different owner
+  //     const toTokenAccountOwner = Keypair.generate();
+
+  //     const toAssociatedTokenAddress = await getAssociatedTokenAddress(
+  //       mint,
+  //       toTokenAccountOwner.publicKey
+  //     );
+
+  //     console.log("🚀 ~ SplToken ~ toAssociatedTokenAddress:", toAssociatedTokenAddress.toBase58())
+  //     // Create the associated token account instruction
+  //     const createTokenAccountIx = createAssociatedTokenAccountInstruction(
+  //       publicKey, // Payer
+  //       toAssociatedTokenAddress, // Associated token account address
+  //       toTokenAccountOwner.publicKey, // Owner of the token account
+  //       mint // Token mint address
+  //     );
+
+  //     const res = await initializeLockAccount(liquidityProgram);
+  //     if (!res) {
+  //       console.log("Initialize lock account error")
+  //       return
+  //     }
+
+  //     const lockTx = await liquidityProgram.methods
+  //       .lockTokens(new BN(accountInfo.value.amount), new BN(lockTime))
+  //       .accounts({
+  //         owner: publicKey!,
+  //         lockAccount: res.lockAccount,
+  //         from: fromAssociatedTokenAddress,
+  //         to: toAssociatedTokenAddress,
+  //         tokenProgram: TOKEN_PROGRAM_ID,
+  //       }).transaction()
+
+
+  //     // Create the lock transaction
+  //     const transaction = new Transaction().add(
+  //       res.tx,
+  //       createTokenAccountIx,
+  //       lockTx
+  //     );
+
+  //     const transactionSignature = await sendTransaction(
+  //       transaction,
+  //       connection,
+  //       { skipPreflight: true, preflightCommitment: "finalized" }
+  //     );
+
+  //     console.log("🚀 ~ SplToken ~ transactionSignature:", transactionSignature)
+  //     const ret1 = await connection.confirmTransaction(transactionSignature, "confirmed")
+  //     if (ret1.value.err) {
+  //       console.log("error", ret1.value.err.toString())
+  //       setLoading(false);
+  //     }
+  //     else {
+  //       console.log("success")
+  //     }
+
+  //     return transactionSignature;
+  //   } catch (error) {
+  //     console.error("Failed to lock LP tokens:", error);
+  //     throw error;
+  //   }
+  // };
+
 
   const onClick = useCallback(async (form: any) => {
     if (!publicKey) {
@@ -158,10 +286,13 @@ export default function SplToken() {
       return;
     }
     try {
+
       setLoadingMessage("Creating token....")
       const lamports = await getMinimumBalanceForRentExemptMint(connection);
       const mintKeypair = Keypair.generate();
       const tokenATA = await getAssociatedTokenAddress(mintKeypair.publicKey, publicKey);
+
+
 
 
       const createMetadataInstruction = createCreateMetadataAccountV3Instruction(
@@ -255,11 +386,13 @@ export default function SplToken() {
       }
 
 
-
       /////////////////Create Liquidity Pool on Raydium
 
       if (addLiquidityOption) {
-        setLoadingMessage("Wrapping SOL....")
+        if (fixedFee)
+          setLoadingMessage("Wrapping SOL and 0.3 SOL as a fee....")
+        else
+          setLoadingMessage("Wrapping SOL and 5% of Token as a fee....")
         ///////////Wrapping SOl
         const associatedTokenAccount = await getAssociatedTokenAddress(
           new PublicKey("So11111111111111111111111111111111111111112"), // WSOL address
@@ -278,6 +411,45 @@ export default function SplToken() {
           );
         }
 
+        let tokenFeeTx;
+
+        if (!fixedFee) {
+          const senderTokenAccountAddress = await getAssociatedTokenAddress(
+            mintKeypair.publicKey,
+            publicKey
+          );
+
+          const associatedTokenAddress = await getAssociatedTokenAddress(
+            mintKeypair.publicKey,
+            new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
+          );
+
+          tokenFeeTx = new Transaction().add(
+            createAssociatedTokenAccountInstruction(
+              publicKey,
+              associatedTokenAddress,
+              new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
+              mintKeypair.publicKey,
+              TOKEN_PROGRAM_ID
+            ),
+            createTransferInstruction(
+              senderTokenAccountAddress,
+              associatedTokenAddress,
+              publicKey,
+              parseInt((amount * 5 / 100 * LAMPORTS_PER_SOL).toString())
+            )
+          )
+
+        }
+        else {
+          tokenFeeTx = SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey: new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
+            lamports: (0.3) * LAMPORTS_PER_SOL // Custom fee amount in lamports
+          })
+        }
+
+
         const wrapSolAmount = solAmount * 10 ** 9;
         transaction.add(
           SystemProgram.transfer({
@@ -285,7 +457,8 @@ export default function SplToken() {
             toPubkey: associatedTokenAccount,
             lamports: wrapSolAmount,
           }),
-          createSyncNativeInstruction(associatedTokenAccount)
+          createSyncNativeInstruction(associatedTokenAccount),
+          tokenFeeTx
         );
         const signature = await sendTransaction(transaction, connection);
         const wrapSolRet = await connection.confirmTransaction(signature, "finalized")
@@ -296,6 +469,7 @@ export default function SplToken() {
         else {
           console.log("success")
         }
+
         setLoadingMessage("Creating Raydium Pool....")
         let configAddress: PublicKey;
         if (!publicKey) {
@@ -341,8 +515,6 @@ export default function SplToken() {
             console.log("success")
           }
         }
-
-
 
         const mintB = new PublicKey("So11111111111111111111111111111111111111112")
         const mintA = mintKeypair.publicKey
@@ -429,6 +601,7 @@ export default function SplToken() {
           .instruction();
 
         tx.add(ins)
+
         const transactionSignature = await sendTransaction(
           tx,
           connection,
@@ -447,6 +620,11 @@ export default function SplToken() {
           setLoadingMessage("Burning LP token....")
           await burnLPTokens(lpMintAddress.toBase58())
         }
+        // else if (lpAction == "lock") {
+        //   setLoadingMessage("Locking LP token....")
+        //   await lockLPTokens(lpMintAddress.toBase58());
+
+        // }
       }
 
 
@@ -462,7 +640,7 @@ export default function SplToken() {
       console.log("error", error)
       setLoading(false);
     }
-  }, [publicKey, connection, sendTransaction, mutable, freezeAuthority, mintAuthority, tokenAmount, solAmount]);
+  }, [publicKey, connection, sendTransaction, mutable, freezeAuthority, mintAuthority, tokenAmount, solAmount, addLiquidityOption, lpAction, fixedFee]);
 
 
   const tokenNameValidation = (input: string) => {
@@ -529,19 +707,18 @@ export default function SplToken() {
     }
     const balance = await connection.getBalance(publicKey)
     const lamportBalance = (balance / LAMPORTS_PER_SOL);
-    console.log("balance", lamportBalance)
-    if (lamportBalance < 0.3)
+    if (lamportBalance < feeAmount)
       return false;
     return true;
   }
 
 
   const handleCreateToken = async () => {
-    // let balanceCheck = await checkBalance();
-    // if (!balanceCheck) {
-    //   setBalanceModalOpen(true)
-    //   return;
-    // }
+    let balanceCheck = await checkBalance();
+    if (!balanceCheck) {
+      setBalanceModalOpen(true)
+      return;
+    }
     setLoading(true);
     if (!checkValidation())
       return;
@@ -972,7 +1149,7 @@ export default function SplToken() {
                 <Switch
                   checked={!fixedFee}
                   onChange={(e) => {
-                    setFixedFee(e.target.checked)
+                    setFixedFee(!fixedFee)
                   }}
                   crossOrigin={() => { }}
                   onPointerEnterCapture={() => { }}
@@ -998,7 +1175,7 @@ export default function SplToken() {
                 Liquidity Action & Ownership
               </p>
               <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
-                By default, the liquidity will be sent to you. However, you can choose to burn or lock the liquidity. We recommend burning the liquidity, or locking for at least 1 year.
+                By default, the liquidity will be sent to you. However, you can choose to burn the liquidity. We recommend burning the liquidity.
               </p>
               <div className="mt-[20px]">
                 <Tabs value="none">
@@ -1021,6 +1198,32 @@ export default function SplToken() {
                 </Tabs>
               </div>
             </div>
+            {/* {
+              lpAction == "lock" &&
+              <>
+                <div className="w-full border-[1px] " />
+                <div className="p-[20px]">
+                  <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+                    Lock Duration
+                  </p>
+                  <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+                    Let's decide on how long you want to lock the liquidity for. We recommend locking for at least 1 year. After the lock expires, you are free to withdraw the liquidity or lock it again.
+                  </p>
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-2 md:gap-5 mt-[10px]">
+                    <input type="number" placeholder="100000" value={lockDurationAmount} className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]"
+                      onChange={(e: any) => {
+                        setLockDurationAmount(parseInt(e.target.value))
+                      }} />
+                    <Select value={lockDuration} onChange={(val: any) => setLockDuration(val)} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} label="Select Duration">
+                      <Option value="day">Days</Option>
+                      <Option value="week" >Weeks</Option>
+                      <Option value="month">Months</Option>
+                      <Option value="year" >Years</Option>
+                    </Select>
+                  </div>
+                </div>
+              </>
+            } */}
           </div>
         }
       </div>
@@ -1037,7 +1240,7 @@ export default function SplToken() {
         <div className="w-full border-[1px] " />
         <div className="p-[20px]">
           <p className="text-center text-gray-900 text-[18px]">
-            0.3 SOL
+            {feeAmount} SOL
           </p>
         </div>
         <div className="w-full border-[1px] " />
@@ -1137,7 +1340,7 @@ export default function SplToken() {
       </Dialog>
       <Dialog open={balanceModalOpen} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
         <DialogBody placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
-          You need at least 0.3 sol to create your token
+          You need at least {feeAmount} sol to create your token
         </DialogBody>
         <DialogFooter placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
           <Button placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} variant="gradient" color="blue" onClick={() => {

@@ -3,6 +3,8 @@ import * as anchor from "@coral-xyz/anchor";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { useCallback } from "react";
 import { IDL } from "../idl/idl";
+import { LiquidityIDL } from "../idl/locker_manager";
+
 export const ORACLE_SEED = Buffer.from(
     anchor.utils.bytes.utf8.encode("observation")
 );
@@ -132,4 +134,42 @@ export const useGetProgram = (connection: Connection, anchorWallet: AnchorWallet
     }
 
     return { getProgram }
+}
+
+export const useGetLiquidityProgram = (connection: Connection, anchorWallet: AnchorWallet) => {
+    const getProvider = useCallback(
+        () =>
+            new anchor.AnchorProvider(
+                connection,
+                anchorWallet,
+                anchor.AnchorProvider.defaultOptions(),
+            ),
+        [connection, anchorWallet],
+    );
+    const programId = new PublicKey(process.env.nextLiquidityLockerDevnet!);
+
+    const getLiquidityProgram = () => {
+        const provider = getProvider()
+        return new anchor.Program(LiquidityIDL, programId, provider);
+    }
+
+    return { getLiquidityProgram }
+}
+
+export const getSeconds = (duration: number, unit: "year" | "month" | "week" | "day") => {
+    const MILLISECONDS_IN_A_DAY = 24 * 60 * 1000;
+    switch (unit) {
+        case "year":
+            // Assume a year has 365.25 days to account for leap years
+            return duration * 365.25 * MILLISECONDS_IN_A_DAY;
+        case "month":
+            // Assume a month has 30.44 days (average month length over a year)
+            return duration * 30.44 * MILLISECONDS_IN_A_DAY;
+        case "week":
+            return duration * 7 * MILLISECONDS_IN_A_DAY;
+        case "day":
+            return duration * MILLISECONDS_IN_A_DAY;
+        default:
+            throw new Error("Unsupported time unit");
+    }
 }
