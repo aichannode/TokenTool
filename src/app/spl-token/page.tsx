@@ -1051,36 +1051,39 @@ export default function SplToken() {
                 </p>
               </div>
               <div className="flex flex-col gap-2 mt-[20px]">
-                <div className=" flex flex-row items-center w-full">
-                  <p className="w-full">
-                    Token Supply (%)
-                  </p>
-                  <p className="w-full">
-                    SOL Amount
-                  </p>
-                </div>
-                <div className="w-full flex flex-row items-center gap-2">
-                  <div className="flex flex-row items-center gap-2 w-full">
-                    <Slider
-                      value={sliderSupplyValue}
-                      onChange={(e) => {
-                        setSliderSupplyValue(parseInt(e.target.value));
-                      }}
-                      color="blue"
-                      placeholder={""}
-                      onPointerEnterCapture={() => { }}
-                      onPointerLeaveCapture={() => { }} />
-                    <p className="text-[16px] md:text-[20px]">
-                      {sliderSupplyValue}%
+                <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-2">
+                  <div className="flex flex-col w-full">
+                    <p className="w-full">
+                      Token Supply (%)
                     </p>
+                    <div className="w-full flex flex-row items-center gap-1 md:gap-2 w-full md:mt-[15px]">
+                      <Slider
+                        value={sliderSupplyValue}
+                        onChange={(e) => {
+                          setSliderSupplyValue(parseInt(e.target.value));
+                        }}
+                        color="blue"
+                        className="min-w-[20px]"
+                        placeholder={""}
+                        onPointerEnterCapture={() => { }}
+                        onPointerLeaveCapture={() => { }} />
+                      <p className="text-[16px] md:text-[20px]">
+                        {sliderSupplyValue}%
+                      </p>
+                    </div>
                   </div>
-                  <input
-                    onChange={(e: any) => {
-                      setSolAmount(parseFloat(e.target.value))
-                    }}
-                    value={solAmount}
-                    type="number"
-                    className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]" />
+                  <div className="flex flex-col w-full">
+                    <p className="w-full">
+                      SOL Amount
+                    </p>
+                    <input
+                      onChange={(e: any) => {
+                        setSolAmount(parseFloat(e.target.value))
+                      }}
+                      value={solAmount}
+                      type="number"
+                      className=" w-full border-[1px] p-[8px] outline-none mt-1 md:mt-2 rounded-[6px]" />
+                  </div>
                 </div>
 
               </div>
@@ -1109,7 +1112,7 @@ export default function SplToken() {
               <div className="mt-[20px] text-gray-700 text-[16px]">
                 Based on the selected options and values above, your token will launch with the following initial parameters, including the starting market cap and the starting price of your token.
               </div>
-              <div className="flex flex-row items-center gap-2 mt-[20px]">
+              <div className="flex flex-col md:flex-row items-center gap-2 mt-[20px]">
                 <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
                   <div className="flex flex-col items-start">
                     <p className="text-[16px] text-gray-900">

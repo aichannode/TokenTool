@@ -390,7 +390,7 @@ export default function StandardToken() {
         </div>
       </div>
 
-      <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
+      {/* <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
           <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
             Liquidity Options
@@ -567,7 +567,7 @@ export default function StandardToken() {
             </div>
           </div>
         }
-      </div>
+      </div> */}
 
       <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
