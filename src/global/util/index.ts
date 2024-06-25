@@ -126,7 +126,7 @@ export const useGetProgram = (connection: Connection, anchorWallet: AnchorWallet
             ),
         [connection, anchorWallet],
     );
-    const programId = new PublicKey(process.env.nextRaydiumCpSwapDevnet!);
+    const programId = new PublicKey(process.env.nextRaydiumCpSwapMainnet!);
 
     const getProgram = () => {
         const provider = getProvider()

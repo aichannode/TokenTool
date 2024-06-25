@@ -5,7 +5,7 @@ import { Slider, Dialog, DialogBody, DialogHeader, Button, DialogFooter, Switch,
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useAnchorWallet, useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram, Transaction } from '@solana/web3.js';
-import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMintInstruction, getMinimumBalanceForRentExemptMint, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createMintToInstruction, getAssociatedTokenAddressSync, createBurnInstruction, getAccount, createSyncNativeInstruction, createAccount, createTransferInstruction, getOrCreateAssociatedTokenAccount } from '@solana/spl-token';
+import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMintInstruction, getMinimumBalanceForRentExemptMint, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createMintToInstruction, getAssociatedTokenAddressSync, createBurnInstruction, getAccount, createSyncNativeInstruction, createAccount, createTransferInstruction, getOrCreateAssociatedTokenAccount, NATIVE_MINT } from '@solana/spl-token';
 import { createCreateMetadataAccountV3Instruction, PROGRAM_ID } from '@metaplex-foundation/mpl-token-metadata';
 import StyledDropzone from "../../components/Dropzone";
 import { useStorageUpload } from "@thirdweb-dev/react";
@@ -111,9 +111,11 @@ export default function SplToken() {
   useEffect(() => {
     if (addLiquidityOption)
       if (fixedFee)
-        setFeeAmount(0.3 + 0.3 + solAmount)
+        // setFeeAmount(0.3 + 0.3 + solAmount)
+        setFeeAmount(0.201 + solAmount)
       else
-        setFeeAmount(0.3 + solAmount)
+        setFeeAmount(0.2 + solAmount)
+    // setFeeAmount(0.3 + solAmount)
   }, [addLiquidityOption, fixedFee, solAmount])
 
   const { mutateAsync: upload } = useStorageUpload();
@@ -356,7 +358,8 @@ export default function SplToken() {
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
-          lamports: 0.28 * LAMPORTS_PER_SOL // Custom fee amount in lamports
+          // lamports: 0.28 * LAMPORTS_PER_SOL // Custom fee amount in lamports
+          lamports: 0.001 * LAMPORTS_PER_SOL // Custom fee amount in lamports
         }),
         createMetadataInstruction,
         ...(mintAuthority ? [createSetAuthorityInstruction(
@@ -445,7 +448,7 @@ export default function SplToken() {
           tokenFeeTx = SystemProgram.transfer({
             fromPubkey: publicKey,
             toPubkey: new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
-            lamports: (0.3) * LAMPORTS_PER_SOL // Custom fee amount in lamports
+            lamports: (0.001) * LAMPORTS_PER_SOL // Custom fee amount in lamports
           })
         }
 
@@ -472,9 +475,6 @@ export default function SplToken() {
 
         setLoadingMessage("Creating Raydium Pool....")
         let configAddress: PublicKey;
-        if (!publicKey) {
-          return
-        }
 
         const program = getProgram()
         const [address, _] = await getAmmConfigAddress(
@@ -518,27 +518,36 @@ export default function SplToken() {
 
         const mintB = new PublicKey("So11111111111111111111111111111111111111112")
         const mintA = mintKeypair.publicKey
+
+        const mintBAmount = new BN(solAmount * LAMPORTS_PER_SOL);
+        const mintAAmount = new BN(tokenAmount).mul(new BN(LAMPORTS_PER_SOL))
+
         const isFront = new BN(new PublicKey(mintA.toBase58()).toBuffer()).lte(
           new BN(new PublicKey(mintB.toBase58()).toBuffer()),
         );
 
         const [token0, token1] = isFront ? [mintA, mintB] : [mintB, mintA];
+        const [token0Amount, token1Amount] = isFront ? [mintAAmount, mintBAmount] : [mintBAmount, mintAAmount];
         const [auth] = await getAuthAddress(program.programId);
+
         const [poolAddress] = await getPoolAddress(
           configAddress,
           token0,
           token1,
           program.programId
         );
+
         const [lpMintAddress] = await getPoolLpMintAddress(
           poolAddress,
           program.programId
         );
+
         const [vault0] = await getPoolVaultAddress(
           poolAddress,
           token0,
           program.programId
         );
+
         const [vault1] = await getPoolVaultAddress(
           poolAddress,
           token1,
@@ -574,9 +583,10 @@ export default function SplToken() {
           TOKEN_PROGRAM_ID
         );
 
-        const createPoolFee = new PublicKey("G11FKBRaAkHAKuLCgLM6K6NUc9rTjPAznRCjZifrTQe2")
+        // const createPoolFee = new PublicKey("G11FKBRaAkHAKuLCgLM6K6NUc9rTjPAznRCjZifrTQe2")
+        const createPoolFee = new PublicKey("DNXgeM9EiiaAbaWvwjHj9fQQLAX5ZsfHyvmYUNRAdNC8")
         const ins = await program.methods
-          .initialize(new BN(solAmount).mul(new BN(LAMPORTS_PER_SOL)), new BN(tokenAmount).mul(new BN(LAMPORTS_PER_SOL)), new BN(0))
+          .initialize(token0Amount, token1Amount, new BN(0))
           .accounts({
             creator: publicKey,
             ammConfig: configAddress,
@@ -628,7 +638,7 @@ export default function SplToken() {
       }
 
 
-      // setCreatedTx(res);
+      setCreatedTx(res);
       setCreatedTokenAddress(mintKeypair.publicKey.toBase58());
       setOpen(true);
       setSymbol("");
