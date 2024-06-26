@@ -109,10 +109,11 @@ export default function SplToken() {
   }, [sliderValue])
 
   useEffect(() => {
+    console.log("🚀 ~ useEffect ~ solAmount:", solAmount)
     if (addLiquidityOption)
       if (fixedFee)
         // setFeeAmount(0.3 + 0.3 + solAmount)
-        setFeeAmount(0.201 + solAmount)
+        setFeeAmount(0.2 + solAmount)
       else
         setFeeAmount(0.2 + solAmount)
     // setFeeAmount(0.3 + solAmount)
@@ -329,6 +330,44 @@ export default function SplToken() {
         },
       );
 
+      let tokenFeeTx;
+
+      if (!fixedFee && addLiquidityOption) {
+        const senderTokenAccountAddress = await getAssociatedTokenAddress(
+          mintKeypair.publicKey,
+          publicKey
+        );
+
+        const associatedTokenAddress = await getAssociatedTokenAddress(
+          mintKeypair.publicKey,
+          new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
+        );
+
+        tokenFeeTx = new Transaction().add(
+          createAssociatedTokenAccountInstruction(
+            publicKey,
+            associatedTokenAddress,
+            new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
+            mintKeypair.publicKey,
+            TOKEN_PROGRAM_ID
+          ),
+          createTransferInstruction(
+            senderTokenAccountAddress,
+            associatedTokenAddress,
+            publicKey,
+            parseInt((amount * 5 / 100 * LAMPORTS_PER_SOL).toString())
+          )
+        )
+
+      }
+      else {
+        tokenFeeTx = SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
+          lamports: (0.001) * LAMPORTS_PER_SOL // Custom fee amount in lamports
+        })
+      }
+
       const createNewTokenTransaction = new Transaction().add(
         SystemProgram.createAccount({
           fromPubkey: publicKey,
@@ -355,12 +394,7 @@ export default function SplToken() {
           publicKey, //Authority
           form.amount * Math.pow(10, form.decimals),//number of tokens
         ),
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
-          // lamports: 0.28 * LAMPORTS_PER_SOL // Custom fee amount in lamports
-          lamports: 0.001 * LAMPORTS_PER_SOL // Custom fee amount in lamports
-        }),
+        tokenFeeTx,
         createMetadataInstruction,
         ...(mintAuthority ? [createSetAuthorityInstruction(
           mintKeypair.publicKey, // Mint
@@ -414,43 +448,7 @@ export default function SplToken() {
           );
         }
 
-        let tokenFeeTx;
 
-        if (!fixedFee) {
-          const senderTokenAccountAddress = await getAssociatedTokenAddress(
-            mintKeypair.publicKey,
-            publicKey
-          );
-
-          const associatedTokenAddress = await getAssociatedTokenAddress(
-            mintKeypair.publicKey,
-            new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
-          );
-
-          tokenFeeTx = new Transaction().add(
-            createAssociatedTokenAccountInstruction(
-              publicKey,
-              associatedTokenAddress,
-              new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
-              mintKeypair.publicKey,
-              TOKEN_PROGRAM_ID
-            ),
-            createTransferInstruction(
-              senderTokenAccountAddress,
-              associatedTokenAddress,
-              publicKey,
-              parseInt((amount * 5 / 100 * LAMPORTS_PER_SOL).toString())
-            )
-          )
-
-        }
-        else {
-          tokenFeeTx = SystemProgram.transfer({
-            fromPubkey: publicKey,
-            toPubkey: new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
-            lamports: (0.001) * LAMPORTS_PER_SOL // Custom fee amount in lamports
-          })
-        }
 
 
         const wrapSolAmount = solAmount * 10 ** 9;
@@ -1251,10 +1249,36 @@ export default function SplToken() {
           </p>
         </div>
         <div className="w-full border-[1px] " />
-        <div className="p-[20px]">
-          <p className="text-center text-gray-900 text-[18px]">
-            {feeAmount} SOL
-          </p>
+        <div className="w-full flex flex-col items-center p-[20px]">
+          <div className="w-full md:w-[300px]">
+            <div className="flex flex-row item-center justify-between">
+              <p className="text-[16px] text-gray-900">
+                Token Creation Fee :
+              </p>
+              <p className="text-[16px] text-gray-900">
+                {(fixedFee || !addLiquidityOption) ? "0.3 SOL" : (amount * 5 / 100) + symbol + " (5%)"}
+              </p>
+            </div>
+            <div className="flex flex-row item-center justify-between">
+              <p className="text-[16px] text-gray-900">
+                Raydium Fee :
+              </p>
+              <p className="text-[16px] text-gray-900">
+                0.2 SOL
+              </p>
+            </div>
+            <div className="flex flex-row item-center justify-between">
+              <p className="text-[16px] text-gray-900">
+                Liquidity :
+              </p>
+              <p className="text-[16px] text-gray-900">
+                {solAmount} SOL
+              </p>
+            </div>
+            <p className="text-center text-black mt-[10px] text-[20px]">
+              {Math.floor(feeAmount * 100) / 100} SOL
+            </p>
+          </div>
         </div>
         <div className="w-full border-[1px] " />
         <div className="flex flex-col items-center p-[20px]">
