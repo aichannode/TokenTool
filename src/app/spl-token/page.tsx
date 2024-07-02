@@ -47,7 +47,6 @@ export default function SplToken() {
   const [enableMetadata, setEnableMetadata] = useState<boolean>(true);
   const [mutable, setMutable] = useState<boolean>(false);
 
-  const [addLiquidityOption, setAddLiquidityOption] = useState<boolean>(false);
   const [tokenAmount, setTokenAmount] = useState<number>(0);
   const [solAmount, setSolAmount] = useState<number>(2);
   const [launchMarketcap, setLaunchMarketCap] = useState<number>(0);
@@ -111,14 +110,13 @@ export default function SplToken() {
   }, [sliderValue])
 
   useEffect(() => {
-    if (addLiquidityOption)
-      if (fixedFee)
-        // setFeeAmount(0.3 + 0.3 + solAmount)
-        setFeeAmount(0.2 + solAmount)
-      else
-        setFeeAmount(0.2 + solAmount)
+    if (fixedFee)
+      // setFeeAmount(0.3 + 0.3 + solAmount)
+      setFeeAmount(0.2 + solAmount)
+    else
+      setFeeAmount(0.2 + solAmount)
     // setFeeAmount(0.3 + solAmount)
-  }, [addLiquidityOption, fixedFee, solAmount])
+  }, [fixedFee, solAmount])
 
   const { mutateAsync: upload } = useStorageUpload();
 
@@ -331,7 +329,7 @@ export default function SplToken() {
 
       let tokenFeeTx;
 
-      if (!fixedFee && addLiquidityOption) {
+      if (!fixedFee) {
         const senderTokenAccountAddress = await getAssociatedTokenAddress(
           mintKeypair.publicKey,
           publicKey
@@ -1290,7 +1288,7 @@ export default function SplToken() {
                     Token Creation Fee :
                   </p>
                   <p className="text-[16px] text-gray-900">
-                    {(fixedFee || !addLiquidityOption) ? "0.3 SOL" : (amount * 5 / 100) + symbol + " (5%)"}
+                    {(fixedFee) ? "0.3 SOL" : (amount * 5 / 100) + symbol + " (5%)"}
                   </p>
                 </div>
                 <div className="flex flex-row item-center justify-between">
