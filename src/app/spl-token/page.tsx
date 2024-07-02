@@ -1,11 +1,11 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { tokenInfoList } from "../../global/config"
-import { Slider, Dialog, DialogBody, DialogHeader, Button, DialogFooter, Switch, Tabs, TabsHeader, TabsBody, Tab, TabPanel, Spinner, Option, Select } from "@material-tailwind/react";
+import { Slider, Dialog, DialogBody, DialogHeader, Button, DialogFooter, Switch, Tabs, TabsHeader, TabsBody, Tab, TabPanel, Spinner } from "@material-tailwind/react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useAnchorWallet, useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram, Transaction } from '@solana/web3.js';
-import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMintInstruction, getMinimumBalanceForRentExemptMint, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createMintToInstruction, getAssociatedTokenAddressSync, createBurnInstruction, getAccount, createSyncNativeInstruction, createAccount, createTransferInstruction, getOrCreateAssociatedTokenAccount, NATIVE_MINT } from '@solana/spl-token';
+import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMintInstruction, getMinimumBalanceForRentExemptMint, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createMintToInstruction, getAssociatedTokenAddressSync, createBurnInstruction, createSyncNativeInstruction, createTransferInstruction } from '@solana/spl-token';
 import { createCreateMetadataAccountV3Instruction, PROGRAM_ID } from '@metaplex-foundation/mpl-token-metadata';
 import StyledDropzone from "../../components/Dropzone";
 import { useStorageUpload } from "@thirdweb-dev/react";
@@ -13,9 +13,8 @@ import { createSetAuthorityInstruction, AuthorityType } from '@solana/spl-token'
 import Footer from "@/components/Footer";
 import { fetchSolPrice } from "@/global/service";
 import { accountExist, getAmmConfigAddress, getAuthAddress, getOrcleAccountAddress, getPoolAddress, getPoolLpMintAddress, getPoolVaultAddress, getSeconds, useGetLiquidityProgram, useGetProgram } from "@/global/util";
-import { Program, BN } from "@coral-xyz/anchor";
+import { BN } from "@coral-xyz/anchor";
 import { ASSOCIATED_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
-import { simulateTransaction } from "@coral-xyz/anchor/dist/cjs/utils/rpc";
 
 
 export default function SplToken() {
@@ -41,6 +40,7 @@ export default function SplToken() {
   const [tokenDescription, setTokenDescription] = useState("");
   const [enableTokenDescription, setEnableTokenDescription] = useState(false);
   const [lpAction, setLpAction] = useState<String>("none" || 'burn');
+  const [enableAddLiquidity, setEnableAddLiquidity] = useState<boolean>(false);
 
   const [freezeAuthority, setFreezeAuthority] = useState<boolean>(true);
   const [mintAuthority, setMintAuthority] = useState<boolean>(true);
@@ -58,7 +58,7 @@ export default function SplToken() {
   const [loadingMessage, setLoadingMessage] = useState<string>("");
   const [fixedFee, setFixedFee] = useState<boolean>(true);
   const [feeAmount, setFeeAmount] = useState<number>(0.3);
-  const [tokenPair, setTokenPair] = useState<string>("2VaobiSusiSbrR1Nbbw44cEMzdzBXcbE8pmbjV9o5pca");
+  const [tokenPair, setTokenPair] = useState<string>("");
   // const [lockDurationAmount, setLockDurationAmount] = useState<number>(1);
   // const [lockDuration, setLockDuration] = useState<"year" | "month" | "week" | "day">('year');
   const { connection } = useConnection();
@@ -393,7 +393,7 @@ export default function SplToken() {
           publicKey, //Authority
           form.amount * Math.pow(10, form.decimals),//number of tokens
         ),
-        // tokenFeeTx,
+        tokenFeeTx,
         createMetadataInstruction,
         ...(mintAuthority ? [createSetAuthorityInstruction(
           mintKeypair.publicKey, // Mint
@@ -429,229 +429,240 @@ export default function SplToken() {
       setTokenName("");
       setAmount(0);
       setLoading(false);
+      setEnableAddLiquidity(true);
     } catch (error) {
       console.log("error", error)
       setLoading(false);
     }
   }, [publicKey, connection, sendTransaction, mutable, freezeAuthority, mintAuthority, fixedFee]);
 
-  const onAddLiquidityClick = useCallback(async (form: any) => {
-
+  const onAddLiquidityClick = useCallback(async (props: any) => {
     if (!publicKey) {
       console.log("Please connect your wallet.");
+      setLoading(false);
       return;
     }
 
     if (!tokenPair) {
+      setLoading(false);
       console.log("Please create token First!");
       return;
     }
 
-    /////////////////Create Liquidity Pool on Raydium
-    if (fixedFee)
-      setLoadingMessage("Wrapping SOL and 0.3 SOL as a fee....")
-    else
-      setLoadingMessage("Wrapping SOL and 5% of Token as a fee....")
-    ///////////Wrapping SOl
-    const associatedTokenAccount = await getAssociatedTokenAddress(
-      new PublicKey("So11111111111111111111111111111111111111112"), // WSOL address
-      publicKey
-    );
-    const transaction = new Transaction();
-    const accountInfo = await connection.getAccountInfo(associatedTokenAccount);
-    if (accountInfo === null) {
-      transaction.add(
-        createAssociatedTokenAccountInstruction(
-          publicKey,
-          associatedTokenAccount,
-          publicKey,
-          new PublicKey("So11111111111111111111111111111111111111112")
-        )
-      );
-    }
-
-    const wrapSolAmount = solAmount * 10 ** 9;
-    transaction.add(
-      SystemProgram.transfer({
-        fromPubkey: publicKey,
-        toPubkey: associatedTokenAccount,
-        lamports: wrapSolAmount,
-      }),
-      createSyncNativeInstruction(associatedTokenAccount)
-    );
-    const signature = await sendTransaction(transaction, connection);
-    const wrapSolRet = await connection.confirmTransaction(signature, "finalized")
-    if (wrapSolRet.value.err) {
-      console.log("error", wrapSolRet.value.err.toString())
-      setLoading(false);
-    }
-    else {
-      console.log("success")
-    }
-
     setLoadingMessage("Creating Raydium Pool....")
-    let configAddress: PublicKey;
 
-    const program = getProgram()
-    const [address, _] = await getAmmConfigAddress(
-      0,
-      program.programId
-    );
+    try {
 
-    configAddress = address
-    if (await accountExist(connection, address)) {
-      console.log("amm config already exists")
-    } else {
-      const tx = await program.methods
-        .createAmmConfig(
-          0,
-          new BN(10),
-          new BN(1000),
-          new BN(25000),
-          new BN(0)
-        )
+      /////////////////Create Liquidity Pool on Raydium
+      // setLoadingMessage("Wrapping SOL and Create Liquidity....")
+      ///////////Wrapping SOl
+      const associatedTokenAccount = await getAssociatedTokenAddress(
+        new PublicKey("So11111111111111111111111111111111111111112"), // WSOL address
+        publicKey
+      );
+      const transaction = new Transaction();
+      const accountInfo = await connection.getAccountInfo(associatedTokenAccount);
+      if (accountInfo === null) {
+        transaction.add(
+          createAssociatedTokenAccountInstruction(
+            publicKey,
+            associatedTokenAccount,
+            publicKey,
+            new PublicKey("So11111111111111111111111111111111111111112")
+          )
+        );
+      }
+
+      const wrapSolAmount = solAmount * 10 ** 9;
+      transaction.add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: associatedTokenAccount,
+          lamports: wrapSolAmount,
+        }),
+        createSyncNativeInstruction(associatedTokenAccount)
+      );
+      // const signature = await sendTransaction(transaction, connection);
+      // const wrapSolRet = await connection.confirmTransaction(signature, "finalized")
+      // if (wrapSolRet.value.err) {
+      //   console.log("error", wrapSolRet.value.err.toString())
+      //   setLoading(false);
+      // }
+      // else {
+      //   console.log("success")
+      // }
+
+
+      let configAddress: PublicKey;
+
+      const program = getProgram()
+      const [address, _] = await getAmmConfigAddress(
+        0,
+        program.programId
+      );
+
+      configAddress = address
+      if (await accountExist(connection, address)) {
+        console.log("amm config already exists")
+      } else {
+        const tx = await program.methods
+          .createAmmConfig(
+            0,
+            new BN(10),
+            new BN(1000),
+            new BN(25000),
+            new BN(0)
+          )
+          .accounts({
+            owner: publicKey,
+            ammConfig: address,
+            systemProgram: SystemProgram.programId,
+          })
+          .transaction();
+
+        const transactionSignature = await sendTransaction(
+          tx,
+          connection
+        );
+
+        const ret = await connection.confirmTransaction(transactionSignature, "finalized")
+        if (ret.value.err) {
+          console.log("error", ret.value.err.toString())
+          setLoading(false);
+        }
+        else {
+          console.log("success")
+        }
+      }
+
+      const mintB = new PublicKey("So11111111111111111111111111111111111111112")
+      const mintA = new PublicKey(tokenPair)
+
+      const mintBAmount = new BN(solAmount * LAMPORTS_PER_SOL);
+      const mintAAmount = new BN(tokenAmount).mul(new BN(LAMPORTS_PER_SOL))
+
+      const isFront = new BN(new PublicKey(mintA.toBase58()).toBuffer()).lte(
+        new BN(new PublicKey(mintB.toBase58()).toBuffer()),
+      );
+
+      const [token0, token1] = isFront ? [mintA, mintB] : [mintB, mintA];
+      const [token0Amount, token1Amount] = isFront ? [mintAAmount, mintBAmount] : [mintBAmount, mintAAmount];
+      const [auth] = await getAuthAddress(program.programId);
+
+      const [poolAddress] = await getPoolAddress(
+        configAddress,
+        token0,
+        token1,
+        program.programId
+      );
+
+      const [lpMintAddress] = await getPoolLpMintAddress(
+        poolAddress,
+        program.programId
+      );
+
+      const [vault0] = await getPoolVaultAddress(
+        poolAddress,
+        token0,
+        program.programId
+      );
+
+      const [vault1] = await getPoolVaultAddress(
+        poolAddress,
+        token1,
+        program.programId
+      );
+
+      const [creatorLpTokenAddress] = await PublicKey.findProgramAddress(
+        [
+          publicKey.toBuffer(),
+          TOKEN_PROGRAM_ID.toBuffer(),
+          lpMintAddress.toBuffer(),
+        ],
+        ASSOCIATED_PROGRAM_ID
+      );
+
+      const [observationAddress] = await getOrcleAccountAddress(
+        poolAddress,
+        program.programId
+      );
+
+      const tx = new Transaction()
+
+      const creatorToken0 = getAssociatedTokenAddressSync(
+        token0,
+        publicKey,
+        false,
+        TOKEN_PROGRAM_ID
+      );
+      const creatorToken1 = getAssociatedTokenAddressSync(
+        token1,
+        publicKey,
+        false,
+        TOKEN_PROGRAM_ID
+      );
+
+      // const createPoolFee = new PublicKey("G11FKBRaAkHAKuLCgLM6K6NUc9rTjPAznRCjZifrTQe2")
+      const createPoolFee = new PublicKey("DNXgeM9EiiaAbaWvwjHj9fQQLAX5ZsfHyvmYUNRAdNC8")
+      const ins = await program.methods
+        .initialize(token0Amount, token1Amount, new BN(0))
         .accounts({
-          owner: publicKey,
-          ammConfig: address,
+          creator: publicKey,
+          ammConfig: configAddress,
+          authority: auth,
+          poolState: poolAddress,
+          token0Mint: token0,
+          token1Mint: token1,
+          lpMint: lpMintAddress,
+          creatorToken0,
+          creatorToken1,
+          creatorLpToken: creatorLpTokenAddress,
+          token0Vault: vault0,
+          token1Vault: vault1,
+          createPoolFee,
+          observationState: observationAddress,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          token0Program: TOKEN_PROGRAM_ID,
+          token1Program: TOKEN_PROGRAM_ID,
           systemProgram: SystemProgram.programId,
+          rent: SYSVAR_RENT_PUBKEY,
         })
-        .transaction();
+        .instruction();
+
+      tx.add(transaction, ins)
+
+      // let result = await simulateTransaction(connection, tx, )
+      // console.log("🚀 ~ onAddLiquidityClick ~ result:", result)
 
       const transactionSignature = await sendTransaction(
         tx,
-        connection
+        connection,
+        { skipPreflight: true, preflightCommitment: "finalized" }
       );
-
-      const ret = await connection.confirmTransaction(transactionSignature, "finalized")
-      if (ret.value.err) {
-        console.log("error", ret.value.err.toString())
+      const ret1 = await connection.confirmTransaction(transactionSignature, "confirmed")
+      if (ret1.value.err) {
+        console.log("error", ret1.value.err.toString())
         setLoading(false);
       }
       else {
         console.log("success")
       }
+
+      if (lpAction == "burn") {
+        setLoadingMessage("Burning LP token....")
+        await burnLPTokens(lpMintAddress.toBase58())
+      }
+      setLoading(false)
+      // else if (lpAction == "lock") {
+      //   setLoadingMessage("Locking LP token....")
+      //   await lockLPTokens(lpMintAddress.toBase58());
+
+      // }
+    } catch (error) {
+      setLoading(false)
     }
 
-    const mintB = new PublicKey("So11111111111111111111111111111111111111112")
-    const mintA = new PublicKey(tokenPair)
-
-    const mintBAmount = new BN(solAmount * LAMPORTS_PER_SOL);
-    const mintAAmount = new BN(tokenAmount).mul(new BN(LAMPORTS_PER_SOL))
-
-    const isFront = new BN(new PublicKey(mintA.toBase58()).toBuffer()).lte(
-      new BN(new PublicKey(mintB.toBase58()).toBuffer()),
-    );
-
-    const [token0, token1] = isFront ? [mintA, mintB] : [mintB, mintA];
-    const [token0Amount, token1Amount] = isFront ? [mintAAmount, mintBAmount] : [mintBAmount, mintAAmount];
-    const [auth] = await getAuthAddress(program.programId);
-
-    const [poolAddress] = await getPoolAddress(
-      configAddress,
-      token0,
-      token1,
-      program.programId
-    );
-
-    const [lpMintAddress] = await getPoolLpMintAddress(
-      poolAddress,
-      program.programId
-    );
-
-    const [vault0] = await getPoolVaultAddress(
-      poolAddress,
-      token0,
-      program.programId
-    );
-
-    const [vault1] = await getPoolVaultAddress(
-      poolAddress,
-      token1,
-      program.programId
-    );
-
-    const [creatorLpTokenAddress] = await PublicKey.findProgramAddress(
-      [
-        publicKey.toBuffer(),
-        TOKEN_PROGRAM_ID.toBuffer(),
-        lpMintAddress.toBuffer(),
-      ],
-      ASSOCIATED_PROGRAM_ID
-    );
-
-    const [observationAddress] = await getOrcleAccountAddress(
-      poolAddress,
-      program.programId
-    );
-
-    const tx = new Transaction()
-
-    const creatorToken0 = getAssociatedTokenAddressSync(
-      token0,
-      publicKey,
-      false,
-      TOKEN_PROGRAM_ID
-    );
-    const creatorToken1 = getAssociatedTokenAddressSync(
-      token1,
-      publicKey,
-      false,
-      TOKEN_PROGRAM_ID
-    );
-
-    // const createPoolFee = new PublicKey("G11FKBRaAkHAKuLCgLM6K6NUc9rTjPAznRCjZifrTQe2")
-    const createPoolFee = new PublicKey("DNXgeM9EiiaAbaWvwjHj9fQQLAX5ZsfHyvmYUNRAdNC8")
-    const ins = await program.methods
-      .initialize(token0Amount, token1Amount, new BN(0))
-      .accounts({
-        creator: publicKey,
-        ammConfig: configAddress,
-        authority: auth,
-        poolState: poolAddress,
-        token0Mint: token0,
-        token1Mint: token1,
-        lpMint: lpMintAddress,
-        creatorToken0,
-        creatorToken1,
-        creatorLpToken: creatorLpTokenAddress,
-        token0Vault: vault0,
-        token1Vault: vault1,
-        createPoolFee,
-        observationState: observationAddress,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        token0Program: TOKEN_PROGRAM_ID,
-        token1Program: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        rent: SYSVAR_RENT_PUBKEY,
-      })
-      .instruction();
-
-    tx.add(ins)
-
-    const transactionSignature = await sendTransaction(
-      tx,
-      connection,
-      { skipPreflight: true, preflightCommitment: "finalized" }
-    );
-    const ret1 = await connection.confirmTransaction(transactionSignature, "confirmed")
-    if (ret1.value.err) {
-      console.log("error", ret1.value.err.toString())
-      setLoading(false);
-    }
-    else {
-      console.log("success")
-    }
-
-    if (lpAction == "burn") {
-      setLoadingMessage("Burning LP token....")
-      await burnLPTokens(lpMintAddress.toBase58())
-    }
-    // else if (lpAction == "lock") {
-    //   setLoadingMessage("Locking LP token....")
-    //   await lockLPTokens(lpMintAddress.toBase58());
-
-    // }
-  }, [tokenAmount, solAmount, lpAction, fixedFee])
+  }, [tokenAmount, solAmount, lpAction, fixedFee, loadingMessage, loading, publicKey, tokenPair])
 
 
   const tokenNameValidation = (input: string) => {
@@ -730,9 +741,9 @@ export default function SplToken() {
     //   setBalanceModalOpen(true)
     //   return;
     // }
-    setLoading(true);
     if (!checkValidation())
       return;
+    setLoading(true);
 
     const metadata = {
       name: tokenName,
@@ -761,10 +772,7 @@ export default function SplToken() {
     //   return;
     // }
     setLoading(true);
-    if (!checkValidation())
-      return;
-
-    onAddLiquidityClick({ tokenAmount, solAmount, lpAction, fixedFee })
+    onAddLiquidityClick({ publicKey, tokenAmount, solAmount, lpAction, fixedFee })
 
   }
 
@@ -1313,8 +1321,9 @@ export default function SplToken() {
                   <WalletMultiButton />
                   :
                   <div className="flex flex-row items-center gap-5">
-                    <button className="w-[150px] h-[50px] bg-blue-900 hover:bg-gray-900 rounded-md"
-                      onClick={handleAddLiquidity}>
+                    <button className={`w-[150px] h-[50px] ${enableAddLiquidity ? 'bg-blue-900  hover:bg-gray-900 ' : 'bg-gray-500 cursor-not-allowed'}  rounded-md`}
+                      // onClick={() => enableAddLiquidity && handleAddLiquidity()}>
+                      onClick={() => handleAddLiquidity()}>
                       <p className="text-white text-[18px] font-700">
                         Add Liquidity
                       </p>
