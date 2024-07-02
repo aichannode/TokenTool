@@ -1322,8 +1322,8 @@ export default function SplToken() {
                   :
                   <div className="flex flex-row items-center gap-5">
                     <button className={`w-[150px] h-[50px] ${enableAddLiquidity ? 'bg-blue-900  hover:bg-gray-900 ' : 'bg-gray-500 cursor-not-allowed'}  rounded-md`}
-                      // onClick={() => enableAddLiquidity && handleAddLiquidity()}>
-                      onClick={() => handleAddLiquidity()}>
+                      onClick={() => enableAddLiquidity && handleAddLiquidity()}>
+                      {/* onClick={() => handleAddLiquidity()}> */}
                       <p className="text-white text-[18px] font-700">
                         Add Liquidity
                       </p>
