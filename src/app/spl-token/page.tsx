@@ -41,6 +41,7 @@ export default function SplToken() {
   const [enableTokenDescription, setEnableTokenDescription] = useState(false);
   const [lpAction, setLpAction] = useState<String>("none" || 'burn');
   const [enableAddLiquidity, setEnableAddLiquidity] = useState<boolean>(false);
+  const [createdAmount, setCreatedAmount] = useState<number>(0);
 
   const [freezeAuthority, setFreezeAuthority] = useState<boolean>(true);
   const [mintAuthority, setMintAuthority] = useState<boolean>(true);
@@ -63,7 +64,6 @@ export default function SplToken() {
   const { connection } = useConnection();
 
   const { getProgram } = useGetProgram(connection, anchorWallet!)
-  const { getLiquidityProgram } = useGetLiquidityProgram(connection, anchorWallet!)
 
   const data = [
     {
@@ -89,7 +89,7 @@ export default function SplToken() {
       if (sliderSupplyValue > 95)
         setSliderSupplyValue(95)
     }
-    let tmpTokenAmount = Math.floor(amount / 100 * sliderSupplyValue)
+    let tmpTokenAmount = Math.floor(createdAmount / 100 * sliderSupplyValue)
     setTokenAmount(tmpTokenAmount)
     let tmpMarketCap = Math.floor(solAmount / sliderSupplyValue * 100 * 100) / 100 as number;
     let tmpTokenPrice = Math.floor(solAmount / tmpTokenAmount * 100000) / 100000 as number;
@@ -101,7 +101,7 @@ export default function SplToken() {
       setLaunchTokenPriceUSD(Math.floor(res.data.Price * 100) / 100 * tmpTokenPrice);
     }
     calculateLaunchMarketCap();
-  }, [sliderSupplyValue, amount, solAmount, fixedFee]);
+  }, [sliderSupplyValue, createdAmount, solAmount, fixedFee]);
 
   useEffect(() => {
     let decimalNum = parseInt((sliderValue / 100 * 9).toFixed(0));
@@ -425,6 +425,7 @@ export default function SplToken() {
       setSymbol("");
       setDecimal(9);
       setTokenName("");
+      setCreatedAmount(amount);
       setAmount(0);
       setLoading(false);
       setEnableAddLiquidity(true);

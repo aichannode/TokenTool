@@ -146,7 +146,7 @@ export const useGetLiquidityProgram = (connection: Connection, anchorWallet: Anc
             ),
         [connection, anchorWallet],
     );
-    const programId = new PublicKey(process.env.nextLiquidityLockerDevnet!);
+    const programId = new PublicKey(process.env.nextLiquidityLockerMainnet!);
 
     const getLiquidityProgram = () => {
         const provider = getProvider()
