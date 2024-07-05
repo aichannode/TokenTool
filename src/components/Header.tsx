@@ -84,6 +84,12 @@ export default function Header() {
                         - Solana Token Creator
                     </button>
                     <button className="text-[18px] font-[500]" onClick={() => {
+                        router.push("/liquidity-manager");
+                        closeDrawer();
+                    }}>
+                        - Solana Liquidity Manager
+                    </button>
+                    <button className="text-[18px] font-[500]" onClick={() => {
                         router.push("/pricing");
                         closeDrawer();
                     }}>

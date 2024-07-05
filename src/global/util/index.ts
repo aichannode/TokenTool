@@ -156,6 +156,16 @@ export const useGetLiquidityProgram = (connection: Connection, anchorWallet: Anc
     return { getLiquidityProgram }
 }
 
+export const isValidSolanaAddress = (address: string): boolean => {
+    try {
+        // Attempt to create a PublicKey instance from the address.
+        new PublicKey(address);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
 export const getSeconds = (duration: number, unit: "year" | "month" | "week" | "day") => {
     const MILLISECONDS_IN_A_DAY = 24 * 60 * 1000;
     switch (unit) {
@@ -172,4 +182,8 @@ export const getSeconds = (duration: number, unit: "year" | "month" | "week" | "
         default:
             throw new Error("Unsupported time unit");
     }
+}
+
+export const cleanString = (str: string) => {
+    return str.replace(/\x00/g, '');
 }

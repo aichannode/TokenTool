@@ -11,18 +11,12 @@ import StyledDropzone from "../../components/Dropzone";
 import { useStorageUpload } from "@thirdweb-dev/react";
 import { createSetAuthorityInstruction, AuthorityType } from '@solana/spl-token';
 import Footer from "@/components/Footer";
-import { fetchSolPrice } from "@/global/service";
-import { accountExist, getAmmConfigAddress, getAuthAddress, getOrcleAccountAddress, getPoolAddress, getPoolLpMintAddress, getPoolVaultAddress, getSeconds, useGetLiquidityProgram, useGetProgram } from "@/global/util";
-import { BN } from "@coral-xyz/anchor";
-import { ASSOCIATED_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 
 
 export default function SplToken() {
   const [decimal, setDecimal] = useState(0);
   const [sliderValue, setSliderValue] = useState<number>(100);
-  const [sliderSupplyValue, setSliderSupplyValue] = useState<number>(100);
   const { publicKey, sendTransaction, connected, signAllTransactions } = useWallet();
-  const anchorWallet = useAnchorWallet()
   const [tokenName, setTokenName] = useState('');
   const [tokenNameValidateMsg, setTokenNameValidateMsg] = useState<string>("");
   const [symbol, setSymbol] = useState('')
@@ -39,69 +33,19 @@ export default function SplToken() {
   const [createTokenAddress, setCreatedTokenAddress] = useState<string>('');
   const [tokenDescription, setTokenDescription] = useState("");
   const [enableTokenDescription, setEnableTokenDescription] = useState(false);
-  const [lpAction, setLpAction] = useState<String>("none" || 'burn');
-  const [enableAddLiquidity, setEnableAddLiquidity] = useState<boolean>(false);
-  const [createdAmount, setCreatedAmount] = useState<number>(0);
 
   const [freezeAuthority, setFreezeAuthority] = useState<boolean>(true);
   const [mintAuthority, setMintAuthority] = useState<boolean>(true);
   const [enableMetadata, setEnableMetadata] = useState<boolean>(true);
   const [mutable, setMutable] = useState<boolean>(false);
 
-  const [tokenAmount, setTokenAmount] = useState<number>(0);
-  const [solAmount, setSolAmount] = useState<number>(2);
-  const [launchMarketcap, setLaunchMarketCap] = useState<number>(0);
-  const [launchMarketcapUSD, setLaunchMarketCapUSD] = useState<number>(0);
-  const [launchTokenPrice, setLaunchTokenPrice] = useState<number>(0)
-  const [launchTokenPriceUSD, setLaunchTokenPriceUSD] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>("");
   const [fixedFee, setFixedFee] = useState<boolean>(true);
-  const [feeAmount, setFeeAmount] = useState<number>(0.3);
-  const [tokenPair, setTokenPair] = useState<string>("");
   // const [lockDurationAmount, setLockDurationAmount] = useState<number>(1);
   // const [lockDuration, setLockDuration] = useState<"year" | "month" | "week" | "day">('year');
   const { connection } = useConnection();
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const { getProgram } = useGetProgram(connection, anchorWallet!)
-
-  const data = [
-    {
-      label: "None",
-      value: "none",
-      desc: `Liquidity will be sent to your wallet. You will retain full ownership and control of the LP.`,
-    },
-    {
-      label: "Burn",
-      value: "burn",
-      desc: `Liquidity will be burned, locking the initial liquidity forever. Once the liquidity is burned, it can never be recovered in any way.`,
-    },
-    // {
-    //   label: "Lock",
-    //   value: "lock",
-    //   desc: `Liquidity will be sent to your wallet. You will retain full ownership and control of the LP.`,
-    // },
-  ];
-
-
-  useEffect(() => {
-    if (!fixedFee) {
-      if (sliderSupplyValue > 95)
-        setSliderSupplyValue(95)
-    }
-    let tmpTokenAmount = Math.floor(createdAmount / 100 * sliderSupplyValue)
-    setTokenAmount(tmpTokenAmount)
-    let tmpMarketCap = Math.floor(solAmount / sliderSupplyValue * 100 * 100) / 100 as number;
-    let tmpTokenPrice = Math.floor(solAmount / tmpTokenAmount * 100000) / 100000 as number;
-    setLaunchMarketCap(tmpMarketCap);
-    setLaunchTokenPrice(tmpTokenPrice);
-    const calculateLaunchMarketCap = async () => {
-      let res = await fetchSolPrice();
-      setLaunchMarketCapUSD(Math.floor(res.data.Price * 100) / 100 * tmpMarketCap);
-      setLaunchTokenPriceUSD(Math.floor(res.data.Price * 100) / 100 * tmpTokenPrice);
-    }
-    calculateLaunchMarketCap();
-  }, [sliderSupplyValue, createdAmount, solAmount, fixedFee]);
 
   useEffect(() => {
     let decimalNum = parseInt((sliderValue / 100 * 9).toFixed(0));
@@ -109,178 +53,8 @@ export default function SplToken() {
     setDecimals(decimalNum.toString());
   }, [sliderValue])
 
-  useEffect(() => {
-    if (fixedFee)
-      // setFeeAmount(0.3 + 0.3 + solAmount)
-      setFeeAmount(0.2 + solAmount)
-    else
-      setFeeAmount(0.2 + solAmount)
-    // setFeeAmount(0.3 + solAmount)
-  }, [fixedFee, solAmount])
 
   const { mutateAsync: upload } = useStorageUpload();
-
-
-  const burnLPTokens = async (
-    tokenMintAddress: string
-  ) => {
-    if (!publicKey) {
-      console.log("Please connect your wallet.");
-      return;
-    }
-    try {
-
-      const mint = new PublicKey(tokenMintAddress);
-
-      // Get the token account for the LP token
-      const ownerTokenAccount = await getAssociatedTokenAddress(mint, publicKey);
-      const accountInfo = await connection.getTokenAccountBalance(ownerTokenAccount);
-
-      // Create the burn transaction
-      const transaction = new Transaction().add(
-        createBurnInstruction(
-          ownerTokenAccount,
-          mint,
-          publicKey,
-          Number(accountInfo.value.amount),
-          [],
-          TOKEN_PROGRAM_ID
-        )
-      );
-
-      const transactionSignature = await sendTransaction(
-        transaction,
-        connection,
-        { skipPreflight: true, preflightCommitment: "finalized" }
-      );
-      const ret1 = await connection.confirmTransaction(transactionSignature, "confirmed")
-      if (ret1.value.err) {
-        console.log("error", ret1.value.err.toString())
-        setLoading(false);
-      }
-      else {
-        console.log("success")
-      }
-
-      return transactionSignature;
-    } catch (error) {
-      console.error("Failed to burn LP tokens:", error);
-      throw error;
-    }
-  };
-
-  // const initializeLockAccount = async (program: Program<LockerManager>) => {
-  //   if (!publicKey) {
-  //     console.log("Please connect your wallet.");
-  //     return;
-  //   }
-  //   const [lockAccountPDA, _] = await PublicKey.findProgramAddress(
-  //     [Buffer.from("lock_account"), publicKey.toBuffer()],
-  //     program.programId
-  //   );
-
-  //   const initialTx = await program.methods
-  //     .initializeLockAccount()
-  //     .accounts({
-  //       lockAccount: lockAccountPDA,
-  //       owner: publicKey!,
-  //       systemProgram: SystemProgram.programId,
-  //     }).transaction()
-
-  //   return { lockAccount: lockAccountPDA, tx: initialTx };
-  // }
-
-  // const lockLPTokens = async (
-  //   tokenMintAddress: string,
-  // ) => {
-  //   if (!publicKey) {
-  //     console.log("Please connect your wallet.");
-  //     return;
-  //   }
-  //   try {
-  //     const mint = new PublicKey(tokenMintAddress);
-  //     // Get the token account for the LP token
-  //     const ownerTokenAccount = await getAssociatedTokenAddress(mint, publicKey);
-  //     const accountInfo = await connection.getTokenAccountBalance(ownerTokenAccount);
-  //     const lockTime = getSeconds(lockDurationAmount, lockDuration);
-  //     const liquidityProgram = getLiquidityProgram()
-
-  //     const fromAssociatedTokenAddress = await getAssociatedTokenAddress(
-  //       mint,
-  //       publicKey
-  //     );
-  //     console.log("🚀 ~ SplToken ~ fromAssociatedTokenAddress:", fromAssociatedTokenAddress.toBase58())
-
-  //     // Check if the associated token account already exists
-  //     const fromTokenAccount = await connection.getAccountInfo(fromAssociatedTokenAddress);
-  //     if (!fromTokenAccount) {
-  //       console.log("Token account not exist");
-  //     }
-
-  //     // Create toTokenAccount with a different owner
-  //     const toTokenAccountOwner = Keypair.generate();
-
-  //     const toAssociatedTokenAddress = await getAssociatedTokenAddress(
-  //       mint,
-  //       toTokenAccountOwner.publicKey
-  //     );
-
-  //     console.log("🚀 ~ SplToken ~ toAssociatedTokenAddress:", toAssociatedTokenAddress.toBase58())
-  //     // Create the associated token account instruction
-  //     const createTokenAccountIx = createAssociatedTokenAccountInstruction(
-  //       publicKey, // Payer
-  //       toAssociatedTokenAddress, // Associated token account address
-  //       toTokenAccountOwner.publicKey, // Owner of the token account
-  //       mint // Token mint address
-  //     );
-
-  //     const res = await initializeLockAccount(liquidityProgram);
-  //     if (!res) {
-  //       console.log("Initialize lock account error")
-  //       return
-  //     }
-
-  //     const lockTx = await liquidityProgram.methods
-  //       .lockTokens(new BN(accountInfo.value.amount), new BN(lockTime))
-  //       .accounts({
-  //         owner: publicKey!,
-  //         lockAccount: res.lockAccount,
-  //         from: fromAssociatedTokenAddress,
-  //         to: toAssociatedTokenAddress,
-  //         tokenProgram: TOKEN_PROGRAM_ID,
-  //       }).transaction()
-
-
-  //     // Create the lock transaction
-  //     const transaction = new Transaction().add(
-  //       res.tx,
-  //       createTokenAccountIx,
-  //       lockTx
-  //     );
-
-  //     const transactionSignature = await sendTransaction(
-  //       transaction,
-  //       connection,
-  //       { skipPreflight: true, preflightCommitment: "finalized" }
-  //     );
-
-  //     console.log("🚀 ~ SplToken ~ transactionSignature:", transactionSignature)
-  //     const ret1 = await connection.confirmTransaction(transactionSignature, "confirmed")
-  //     if (ret1.value.err) {
-  //       console.log("error", ret1.value.err.toString())
-  //       setLoading(false);
-  //     }
-  //     else {
-  //       console.log("success")
-  //     }
-
-  //     return transactionSignature;
-  //   } catch (error) {
-  //     console.error("Failed to lock LP tokens:", error);
-  //     throw error;
-  //   }
-  // };
-
 
   const onCreateTokenClick = useCallback(async (form: any) => {
     if (!publicKey) {
@@ -292,7 +66,6 @@ export default function SplToken() {
       setLoadingMessage("Creating token....")
       const lamports = await getMinimumBalanceForRentExemptMint(connection);
       const mintKeypair = Keypair.generate();
-      setTokenPair(mintKeypair.publicKey.toBase58());
       const tokenATA = await getAssociatedTokenAddress(mintKeypair.publicKey, publicKey);
 
       const createMetadataInstruction = createCreateMetadataAccountV3Instruction(
@@ -327,43 +100,12 @@ export default function SplToken() {
         },
       );
 
-      let tokenFeeTx;
+      const tokenFeeTx = SystemProgram.transfer({
+        fromPubkey: publicKey,
+        toPubkey: new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
+        lamports: (0.001) * LAMPORTS_PER_SOL // Custom fee amount in lamports
+      })
 
-      if (!fixedFee) {
-        const senderTokenAccountAddress = await getAssociatedTokenAddress(
-          mintKeypair.publicKey,
-          publicKey
-        );
-
-        const associatedTokenAddress = await getAssociatedTokenAddress(
-          mintKeypair.publicKey,
-          new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
-        );
-
-        tokenFeeTx = new Transaction().add(
-          createAssociatedTokenAccountInstruction(
-            publicKey,
-            associatedTokenAddress,
-            new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
-            mintKeypair.publicKey,
-            TOKEN_PROGRAM_ID
-          ),
-          createTransferInstruction(
-            senderTokenAccountAddress,
-            associatedTokenAddress,
-            publicKey,
-            parseInt((amount * 5 / 100 * LAMPORTS_PER_SOL).toString())
-          )
-        )
-
-      }
-      else {
-        tokenFeeTx = SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: new PublicKey("5hYsGSXaMv7B4YJx1Vu3Gv7fmFQ5fHTUcMSyfekijDXo"),
-          lamports: (0.001) * LAMPORTS_PER_SOL // Custom fee amount in lamports
-        })
-      }
 
       const createNewTokenTransaction = new Transaction().add(
         SystemProgram.createAccount({
@@ -425,243 +167,14 @@ export default function SplToken() {
       setSymbol("");
       setDecimal(9);
       setTokenName("");
-      setCreatedAmount(amount);
       setAmount(0);
       setLoading(false);
-      setEnableAddLiquidity(true);
     } catch (error) {
       console.log("error", error)
       setLoading(false);
     }
   }, [publicKey, connection, sendTransaction, mutable, freezeAuthority, mintAuthority, fixedFee]);
 
-  const onAddLiquidityClick = useCallback(async (props: any) => {
-    if (!publicKey) {
-      console.log("Please connect your wallet.");
-      setLoading(false);
-      return;
-    }
-
-    if (!tokenPair) {
-      setLoading(false);
-      console.log("Please create token First!");
-      return;
-    }
-
-    setLoadingMessage("Creating Raydium Pool....")
-
-    try {
-
-      /////////////////Create Liquidity Pool on Raydium
-      // setLoadingMessage("Wrapping SOL and Create Liquidity....")
-      ///////////Wrapping SOl
-      const associatedTokenAccount = await getAssociatedTokenAddress(
-        new PublicKey("So11111111111111111111111111111111111111112"), // WSOL address
-        publicKey
-      );
-      const transaction = new Transaction();
-      const accountInfo = await connection.getAccountInfo(associatedTokenAccount);
-      if (accountInfo === null) {
-        transaction.add(
-          createAssociatedTokenAccountInstruction(
-            publicKey,
-            associatedTokenAccount,
-            publicKey,
-            new PublicKey("So11111111111111111111111111111111111111112")
-          )
-        );
-      }
-
-      const wrapSolAmount = solAmount * 10 ** 9;
-      transaction.add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: associatedTokenAccount,
-          lamports: wrapSolAmount,
-        }),
-        createSyncNativeInstruction(associatedTokenAccount)
-      );
-      // const signature = await sendTransaction(transaction, connection);
-      // const wrapSolRet = await connection.confirmTransaction(signature, "finalized")
-      // if (wrapSolRet.value.err) {
-      //   console.log("error", wrapSolRet.value.err.toString())
-      //   setLoading(false);
-      // }
-      // else {
-      //   console.log("success")
-      // }
-
-
-      let configAddress: PublicKey;
-
-      const program = getProgram()
-      const [address, _] = await getAmmConfigAddress(
-        0,
-        program.programId
-      );
-
-      configAddress = address
-      if (await accountExist(connection, address)) {
-        console.log("amm config already exists")
-      } else {
-        const tx = await program.methods
-          .createAmmConfig(
-            0,
-            new BN(10),
-            new BN(1000),
-            new BN(25000),
-            new BN(0)
-          )
-          .accounts({
-            owner: publicKey,
-            ammConfig: address,
-            systemProgram: SystemProgram.programId,
-          })
-          .transaction();
-
-        const transactionSignature = await sendTransaction(
-          tx,
-          connection
-        );
-
-        const ret = await connection.confirmTransaction(transactionSignature, "finalized")
-        if (ret.value.err) {
-          console.log("error", ret.value.err.toString())
-          setLoading(false);
-        }
-        else {
-          console.log("success")
-        }
-      }
-
-      const mintB = new PublicKey("So11111111111111111111111111111111111111112")
-      const mintA = new PublicKey(tokenPair)
-
-      const mintBAmount = new BN(solAmount * LAMPORTS_PER_SOL);
-      const mintAAmount = new BN(tokenAmount).mul(new BN(LAMPORTS_PER_SOL))
-
-      const isFront = new BN(new PublicKey(mintA.toBase58()).toBuffer()).lte(
-        new BN(new PublicKey(mintB.toBase58()).toBuffer()),
-      );
-
-      const [token0, token1] = isFront ? [mintA, mintB] : [mintB, mintA];
-      const [token0Amount, token1Amount] = isFront ? [mintAAmount, mintBAmount] : [mintBAmount, mintAAmount];
-      const [auth] = await getAuthAddress(program.programId);
-
-      const [poolAddress] = await getPoolAddress(
-        configAddress,
-        token0,
-        token1,
-        program.programId
-      );
-
-      const [lpMintAddress] = await getPoolLpMintAddress(
-        poolAddress,
-        program.programId
-      );
-
-      const [vault0] = await getPoolVaultAddress(
-        poolAddress,
-        token0,
-        program.programId
-      );
-
-      const [vault1] = await getPoolVaultAddress(
-        poolAddress,
-        token1,
-        program.programId
-      );
-
-      const [creatorLpTokenAddress] = await PublicKey.findProgramAddress(
-        [
-          publicKey.toBuffer(),
-          TOKEN_PROGRAM_ID.toBuffer(),
-          lpMintAddress.toBuffer(),
-        ],
-        ASSOCIATED_PROGRAM_ID
-      );
-
-      const [observationAddress] = await getOrcleAccountAddress(
-        poolAddress,
-        program.programId
-      );
-
-      const tx = new Transaction()
-
-      const creatorToken0 = getAssociatedTokenAddressSync(
-        token0,
-        publicKey,
-        false,
-        TOKEN_PROGRAM_ID
-      );
-      const creatorToken1 = getAssociatedTokenAddressSync(
-        token1,
-        publicKey,
-        false,
-        TOKEN_PROGRAM_ID
-      );
-
-      // const createPoolFee = new PublicKey("G11FKBRaAkHAKuLCgLM6K6NUc9rTjPAznRCjZifrTQe2")
-      const createPoolFee = new PublicKey("DNXgeM9EiiaAbaWvwjHj9fQQLAX5ZsfHyvmYUNRAdNC8")
-      const ins = await program.methods
-        .initialize(token0Amount, token1Amount, new BN(0))
-        .accounts({
-          creator: publicKey,
-          ammConfig: configAddress,
-          authority: auth,
-          poolState: poolAddress,
-          token0Mint: token0,
-          token1Mint: token1,
-          lpMint: lpMintAddress,
-          creatorToken0,
-          creatorToken1,
-          creatorLpToken: creatorLpTokenAddress,
-          token0Vault: vault0,
-          token1Vault: vault1,
-          createPoolFee,
-          observationState: observationAddress,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          token0Program: TOKEN_PROGRAM_ID,
-          token1Program: TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-          rent: SYSVAR_RENT_PUBKEY,
-        })
-        .instruction();
-
-      tx.add(transaction, ins)
-
-      // let result = await simulateTransaction(connection, tx, )
-      // console.log("🚀 ~ onAddLiquidityClick ~ result:", result)
-
-      const transactionSignature = await sendTransaction(
-        tx,
-        connection,
-        { skipPreflight: true, preflightCommitment: "finalized" }
-      );
-      const ret1 = await connection.confirmTransaction(transactionSignature, "confirmed")
-      if (ret1.value.err) {
-        console.log("error", ret1.value.err.toString())
-        setLoading(false);
-      }
-      else {
-        console.log("success")
-      }
-
-      if (lpAction == "burn") {
-        setLoadingMessage("Burning LP token....")
-        await burnLPTokens(lpMintAddress.toBase58())
-      }
-      setLoading(false)
-      // else if (lpAction == "lock") {
-      //   setLoadingMessage("Locking LP token....")
-      //   await lockLPTokens(lpMintAddress.toBase58());
-
-      // }
-    } catch (error) {
-      setLoading(false)
-    }
-
-  }, [tokenAmount, solAmount, lpAction, fixedFee, loadingMessage, loading, publicKey, tokenPair])
 
 
   const tokenNameValidation = (input: string) => {
@@ -728,7 +241,7 @@ export default function SplToken() {
     }
     const balance = await connection.getBalance(publicKey)
     const lamportBalance = (balance / LAMPORTS_PER_SOL);
-    if (lamportBalance < feeAmount)
+    if (lamportBalance < 0.3)
       return false;
     return true;
   }
@@ -764,16 +277,7 @@ export default function SplToken() {
 
   }
 
-  const handleAddLiquidity = async () => {
-    // let balanceCheck = await checkBalance();
-    // if (!balanceCheck) {
-    //   setBalanceModalOpen(true)
-    //   return;
-    // }
-    setLoading(true);
-    onAddLiquidityClick({ publicKey, tokenAmount, solAmount, lpAction, fixedFee })
 
-  }
 
   const openTokenOnScan = () => {
     window.open("https://solscan.io/account/" + createTokenAddress)
@@ -809,9 +313,6 @@ export default function SplToken() {
             </div> */}
       <div className="mt-[20px]">
         <WalletMultiButton />
-      </div>
-      <div className="w-full md:w-[800px] text-gray-900 text-[24px] md:text-[28px] font-[700] mt-[20px]">
-        Step 1: Create your token
       </div>
       <div className="border-[1px] border-[#AAA] bg-white rounded-xl w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
@@ -1054,35 +555,9 @@ export default function SplToken() {
         </div>
         <div className="w-full border-[1px] " />
         <div className="p-[20px]">
-          <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
-            Fee Option
+          <p className="text-gray-700 text-[12px] md:text-[16px] font-[500] text-center">
+            0.3 SOL
           </p>
-          <div className="flex flex-row w-full justify-between">
-            <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
-              5% of Minted Token
-            </p>
-            <Switch
-              checked={!fixedFee}
-              onChange={(e) => {
-                setFixedFee(!fixedFee)
-              }}
-              crossOrigin={() => { }}
-              onPointerEnterCapture={() => { }}
-              onPointerLeaveCapture={() => { }} />
-          </div>
-          <div className="flex flex-row w-full justify-between">
-            <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
-              0.3 SOL
-            </p>
-            <Switch
-              checked={fixedFee}
-              onChange={(e) => {
-                setFixedFee(e.target.checked)
-              }}
-              crossOrigin={() => { }}
-              onPointerEnterCapture={() => { }}
-              onPointerLeaveCapture={() => { }} />
-          </div>
         </div>
         <div className="w-full border-[1px] " />
         <div className="flex flex-col items-center p-[20px]">
@@ -1097,244 +572,34 @@ export default function SplToken() {
                     Deploy Token
                   </p>
                 </button>
+
                 <WalletMultiButton />
               </div>
           }
         </div>
       </div>
-      <div className="w-full md:w-[800px] text-gray-900 text-[24px] md:text-[28px] font-[700] mt-[20px]">
-        Step 2: Add Liquidity
-      </div>
+
       <div className="border-[1px] border-[#AAA] bg-white rounded-xl w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
           <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
             Add Liquidity
           </p>
           <p className="text-gray-800 text-[16px] md:text-[20px]">
-            Automatically create and fund the liqudity pool, this will allow users to buy your token.
+            Do you wanna add liquidity to Raydium?
           </p>
         </div>
-        {
-          <div>
-            <div className="w-full border-[1px] " />
-            <div className="p-[20px]">
-              <div className="flex flex-col items-start">
-                <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
-                  Token Paring & Funding
-                </p>
-                <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
-                  Pair a percentage of your token supply with SOL to fund the liquidity pool, We recommend pairing at least 10% of your token supply with at least 1SOL.
-                </p>
-              </div>
-              <div className="flex flex-col gap-2 mt-[20px]">
-                <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-2">
-                  <div className="flex flex-col w-full">
-                    <p className="w-full">
-                      Token Supply (%)
-                    </p>
-                    <div className="w-full flex flex-row items-center gap-1 md:gap-2 w-full md:mt-[15px]">
-                      <Slider
-                        value={sliderSupplyValue}
-                        onChange={(e) => {
-                          setSliderSupplyValue(parseInt(e.target.value));
-                        }}
-                        color="blue"
-                        className="min-w-[20px]"
-                        placeholder={""}
-                        onPointerEnterCapture={() => { }}
-                        onPointerLeaveCapture={() => { }} />
-                      <p className="text-[16px] md:text-[20px]">
-                        {sliderSupplyValue}%
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col w-full">
-                    <p className="w-full">
-                      SOL Amount
-                    </p>
-                    <input
-                      onChange={(e: any) => {
-                        setSolAmount(parseFloat(e.target.value))
-                      }}
-                      value={solAmount}
-                      type="number"
-                      className=" w-full border-[1px] p-[8px] outline-none mt-1 md:mt-2 rounded-[6px]" />
-                  </div>
-                </div>
+        <div className="w-full border-[1px] " />
+        <div className="p-[20px] flex items-center justify-center w-full">
+          <button className="w-[150px] h-[50px] bg-cyan-700 hover:bg-gray-700 rounded-md mt-[20px]"
+            onClick={handleCreateToken}>
+            <p className="text-white text-[18px] font-700">
+              Add Liquidity
+            </p>
+          </button>
+        </div>
 
-              </div>
-              <div className="flex flex-row items-center gap-2 mt-[20px]">
-                <div className="flex flex-col items-end w-full p-[10px] border-[1px] rounded-xl">
-                  <div className="flex flex-col items-end">
-                    <p className="text-[18px] text-gray-800">
-                      Token
-                    </p>
-                    <p className="text-[18px] text-gray-800">
-                      {tokenAmount}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
-                  <div className="flex flex-col items-start">
-                    <p className="text-[18px] text-gray-800">
-                      SOL
-                    </p>
-                    <p className="text-[18px] text-gray-800">
-                      {solAmount}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-[20px] text-gray-700 text-[16px]">
-                Based on the selected options and values above, your token will launch with the following initial parameters, including the starting market cap and the starting price of your token.
-              </div>
-              <div className="flex flex-col md:flex-row items-center gap-2 mt-[20px]">
-                <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
-                  <div className="flex flex-col items-start">
-                    <p className="text-[16px] text-gray-900">
-                      Launch Market Cap
-                    </p>
-                    <p className="text-[16px] text-gray-900">
-                      {launchMarketcap} SOL
-                      <span className="text-[14px]">
-                        (~ {launchMarketcapUSD} USD)
-                      </span>
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
-                  <div className="flex flex-col items-start">
-                    <p className="text-[16px] text-gray-900">
-                      Launch Token Price
-                    </p>
-                    <p className="text-[16px] text-gray-900">
-                      {launchTokenPrice} SOL
-                      <span className="text-[14px]">
-                        (~{launchTokenPriceUSD} USD)
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-full border-[1px] " />
-            <div className="p-[20px]">
-              <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
-                DEX Exchange
-              </p>
-              <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
-                We'll use the Raydium to create your liquidity pair and seed the initial pool.
-              </p>
-            </div>
-            <div className="w-full border-[1px] " />
-            <div className="p-[20px]">
-              <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
-                Liquidity Action & Ownership
-              </p>
-              <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
-                By default, the liquidity will be sent to you. However, you can choose to burn the liquidity. We recommend burning the liquidity.
-              </p>
-              <div className="mt-[20px]">
-                <Tabs value="none">
-                  <TabsHeader placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
-                    {data.map(({ label, value }) => (
-                      <Tab placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} key={value} value={value} onClick={() => {
-                        setLpAction(value)
-                      }}>
-                        {label}
-                      </Tab>
-                    ))}
-                  </TabsHeader>
-                  <TabsBody placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
-                    {data.map(({ value, desc }) => (
-                      <TabPanel key={value} value={value}  >
-                        {desc}
-                      </TabPanel>
-                    ))}
-                  </TabsBody>
-                </Tabs>
-              </div>
-            </div>
-            {/* {
-              lpAction == "lock" &&
-              <>
-                <div className="w-full border-[1px] " />
-                <div className="p-[20px]">
-                  <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
-                    Lock Duration
-                  </p>
-                  <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
-                    Let's decide on how long you want to lock the liquidity for. We recommend locking for at least 1 year. After the lock expires, you are free to withdraw the liquidity or lock it again.
-                  </p>
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-2 md:gap-5 mt-[10px]">
-                    <input type="number" placeholder="100000" value={lockDurationAmount} className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]"
-                      onChange={(e: any) => {
-                        setLockDurationAmount(parseInt(e.target.value))
-                      }} />
-                    <Select value={lockDuration} onChange={(val: any) => setLockDuration(val)} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} label="Select Duration">
-                      <Option value="day">Days</Option>
-                      <Option value="week" >Weeks</Option>
-                      <Option value="month">Months</Option>
-                      <Option value="year" >Years</Option>
-                    </Select>
-                  </div>
-                </div>
-              </>
-            } */}
-            <div className="w-full border-[1px] " />
-            <div className="w-full flex flex-col items-center p-[20px]">
-              <div className="w-full md:w-[300px]">
-                <div className="flex flex-row item-center justify-between">
-                  <p className="text-[16px] text-gray-900">
-                    Token Creation Fee :
-                  </p>
-                  <p className="text-[16px] text-gray-900">
-                    {(fixedFee) ? "0.3 SOL" : (amount * 5 / 100) + symbol + " (5%)"}
-                  </p>
-                </div>
-                <div className="flex flex-row item-center justify-between">
-                  <p className="text-[16px] text-gray-900">
-                    Raydium Fee :
-                  </p>
-                  <p className="text-[16px] text-gray-900">
-                    0.2 SOL
-                  </p>
-                </div>
-                <div className="flex flex-row item-center justify-between">
-                  <p className="text-[16px] text-gray-900">
-                    Liquidity :
-                  </p>
-                  <p className="text-[16px] text-gray-900">
-                    {solAmount} SOL
-                  </p>
-                </div>
-                <p className="text-center text-black mt-[10px] text-[20px]">
-                  {Math.floor(feeAmount * 100) / 100} SOL
-                </p>
-              </div>
-            </div>
-            <div className="w-full border-[1px] " />
-            <div className="flex flex-col items-center p-[20px]">
-              {
-                !connected ?
-                  <WalletMultiButton />
-                  :
-                  <div className="flex flex-row items-center gap-5">
-                    <button className={`w-[150px] h-[50px] ${enableAddLiquidity ? 'bg-blue-900  hover:bg-gray-900 ' : 'bg-gray-500 cursor-not-allowed'}  rounded-md`}
-                      onClick={() => enableAddLiquidity && handleAddLiquidity()}>
-                      {/* onClick={() => handleAddLiquidity()}> */}
-                      <p className="text-white text-[18px] font-700">
-                        Add Liquidity
-                      </p>
-                    </button>
-                    <WalletMultiButton />
-                  </div>
-              }
-            </div>
-          </div>
-
-        }
       </div>
+
 
 
       <div className="flex flex-col gap-1 mt-[20px] w-full md:w-[800px]">
@@ -1416,7 +681,7 @@ export default function SplToken() {
       </Dialog>
       <Dialog open={balanceModalOpen} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
         <DialogBody placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
-          You need at least {feeAmount} sol to create your token
+          You need at least 0.3 sol to create your token
         </DialogBody>
         <DialogFooter placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
           <Button placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} variant="gradient" color="blue" onClick={() => {
