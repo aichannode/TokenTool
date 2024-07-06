@@ -115,7 +115,6 @@ export default function LiquidityManager() {
             mintAddress: item.account.data.parsed.info.mint,
             tokenAmount: item.account.data.parsed.info.tokenAmount.uiAmount
         }));
-        console.log("🚀 ~ consttokenList:TokenInfo[]=tokenAccounts.value.map ~ tokenList:", tokenList)
         setTokenMintList(tokenList)
     }
 
@@ -163,7 +162,7 @@ export default function LiquidityManager() {
                 setTokenName(res.name);
                 setTokenSymbol(res.symbol);
                 setTotalSupply(res.totalSupply);
-                setTokenAmount(res.totalSupply);
+                setCreatedAmount(res.totalSupply);
                 setValidateToken(true)
             } else {
                 console.log("Token information could not be retrieved.");
