@@ -133,7 +133,7 @@ export default function SplToken() {
           publicKey, //Authority
           form.amount * Math.pow(10, form.decimals),//number of tokens
         ),
-        tokenFeeTx,
+        // tokenFeeTx,
         createMetadataInstruction,
         ...(mintAuthority ? [createSetAuthorityInstruction(
           mintKeypair.publicKey, // Mint

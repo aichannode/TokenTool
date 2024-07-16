@@ -294,7 +294,6 @@ export const explorerName = (chainId: number) => {
             name = "ArbiScan";
             break;
 
-            break;
     }
     return name;
 }

@@ -47,9 +47,9 @@ const evmTokenContractData: IndexedTokenData = {
         currencyName: "ETH"
     },
     42161: {
-        tokenFactoryManagerAddress: "0x1D724D30D496b5332b4D223d8b59f8D93CD58940",
-        stdTokenAddress: "0x8e99313a8041220f83BC4747A0C94faA440BF699",
-        stdTokenFactoryAddress: "0x780F75F4e8CE21fE60755E1E884ad8513fc1B2A4",
+        tokenFactoryManagerAddress: "0x0351F41154CCc0a90D374B8E876B8B8b069c9f3D",
+        stdTokenAddress: "0xDE95AB809beEcC89325c5C3B9342Eb829a527F5C",
+        stdTokenFactoryAddress: "0xd8351CE6a7a3d40046999b6FEb0Cd73712EF79Cb",
         currencyName: "ETH"
     },
     43114: {
