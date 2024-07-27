@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# TokenTool
 
-## Getting Started
+**Live site:** [https://www.tokentool.io/](https://www.tokentool.io/)
 
-First, run the development server:
+TokenTool is a web app for creating and deploying **ERC-20** tokens on EVM networks and **SPL** tokens on **Solana**, plus a **Raydium liquidity manager** for Solana. The marketing home page describes it as a way to launch a crypto or meme token in about a minute by choosing a token type and chain.
+
+## Features
+
+- **EVM standard token** — Deploy ERC-20 contracts with typical options (supply, ownership, mint, burn, pause) via wallet-connected flows. Supported chains include Ethereum, BNB Smart Chain, Polygon, Base, OP Mainnet, Arbitrum One, Avalanche, and Blast.
+- **Solana SPL token** — Create SPL tokens with metadata (name, symbol, decimals, logo) using Solana wallets and Metaplex-related tooling.
+- **Raydium liquidity manager** — Manage liquidity on Raydium from the app (see `/liquidity-manager`).
+- **Pricing** — Per-chain pricing is shown on the site (`/pricing`); implementation lives in `src/global/config/index.ts`.
+
+Other routes include **Contact Us** and legal pages (**Privacy Policy**, **Terms & Conditions**).
+
+## Tech stack
+
+- **Framework:** [Next.js](https://nextjs.org/) 14 (App Router), React 18, TypeScript
+- **EVM:** [wagmi](https://wagmi.sh/), [viem](https://viem.sh/), [RainbowKit](https://www.rainbowkit.com/), [Thirdweb React](https://thirdweb.com/)
+- **Solana:** [@solana/web3.js](https://solana.com/docs), [@solana/spl-token](https://spl.solana.com/token), [Anchor](https://www.anchor-lang.com/), wallet adapter UI, Metaplex token metadata
+- **UI:** Tailwind CSS, Material Tailwind, Heroicons
+- **Email:** Contact form can use SendGrid via `src/app/api/send-email/route.ts` (configure API keys in your environment for production)
+
+## Getting started
+
+Install dependencies and run the dev server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build    # production build
+npm run start    # run production server
+npm run lint     # ESLint
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Project layout
 
-## Learn More
+- `src/app/` — Pages (home, `standard-token`, `spl-token`, `liquidity-manager`, `pricing`, contact, legal)
+- `src/components/` — Shared UI (header, footer, token panels, wallet controls)
+- `src/global/` — Chain config, ABIs, IDLs, services, and utilities
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This repository powers **[tokentool.io](https://www.tokentool.io/)**. For framework-specific Next.js docs, see [Next.js Documentation](https://nextjs.org/docs).
