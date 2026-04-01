@@ -1,12 +1,11 @@
 "use client"
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { addTokenToWallet, blockExplorers, chainInfoList, explorerName, priceList, tokenInfoList } from "../../global/config"
 import { Select, Option, Slider, Dialog, DialogBody, DialogHeader, Button, DialogFooter, Spinner, Switch } from "@material-tailwind/react";
-import { useAccount, useBalance, useChainId, useContractRead, useContractWrite, useSwitchNetwork, usePrepareContractWrite, useContractEvent, useWaitForTransaction } from "wagmi";
+import { useAccount, useBalance, useChainId, useReadContract, useWriteContract, useSwitchChain, useSimulateContract, useWatchContractEvent, useWaitForTransactionReceipt } from "wagmi";
 import evmTokenContractData from "../../global/global";
 import { Address, formatUnits, parseUnits } from 'viem';
 import { stdTokenFactoryAbi } from "../../global/abi/stdTokenFactoryAbi";
-import { watchContractEvent } from "wagmi/actions";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import Footer from "@/components/Footer";
@@ -25,64 +24,62 @@ export default function StandardToken() {
   const [decimalsValidationMsg, setDecimalsValidationMsg] = useState<string>("");
   const [totalSupply, setTotalSupply] = useState<number>(1000);
   const [totalSupplyValidationMsg, setTotalSupplyValidationMsg] = useState<string>("");
-  const [flatFee, setFlatFee] = useState<bigint | undefined>();
   const [createdTx, setCreatedTx] = useState<string>("");
   const [createTokenAddress, setCreatedTokenAddress] = useState<string | undefined>('');
   const [open, setOpen] = useState<boolean>(false)
   const [balanceModalOpen, setBalanceModalOpen] = useState<boolean>(false)
   const { isConnected, address } = useAccount();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
   const [addLiquidityOption, setAddLiquidityOption] = useState<boolean>(false);
   const chainId = useChainId();
+
+  const factoryAddress = evmTokenContractData[chainId]?.stdTokenFactoryAddress as Address | undefined;
+  const pendingTxHashRef = useRef<`0x${string}` | undefined>(undefined);
 
   useEffect(() => {
     console.log("🚀 ~ StandardToken ~ addLiquidityOption:", addLiquidityOption)
   }, [addLiquidityOption])
 
-
-  const result = useContractRead({
+  const { data: flatFee } = useReadContract({
     abi: stdTokenFactoryAbi,
-    address: evmTokenContractData[chainId]?.stdTokenFactoryAddress as Address,
-    functionName: 'flatFee'
+    address: (factoryAddress ?? '0x0000000000000000000000000000000000000000') as Address,
+    functionName: 'flatFee',
+    query: { enabled: Boolean(factoryAddress) },
   });
 
   const mybalance = useBalance({
     address: address as Address,
   })
 
-  const { config, error: prepareError, isError: isPrepareError, refetch: prepareRefetch } = usePrepareContractWrite({
-    chainId: chainId,
-    address: evmTokenContractData[chainId]?.stdTokenFactoryAddress as Address,
+  const formValid =
+    tokenName.trim() !== '' &&
+    tokenSymbol.trim() !== '' &&
+    decimals > 0 &&
+    Number(totalSupply) > 0;
+
+  const { data: simulation, error: simulateError, isError: isPrepareError, refetch: prepareRefetch } = useSimulateContract({
+    address: (factoryAddress ?? '0x0000000000000000000000000000000000000000') as Address,
     abi: stdTokenFactoryAbi,
     functionName: 'create',
     args: [
       tokenName,
       tokenSymbol,
       decimals,
-      parseUnits(totalSupply.toString(), 18)
+      parseUnits(String(totalSupply), 18),
     ],
     value: flatFee,
-    onSuccess(data) {
-      setDeployLoading(false)
+    query: {
+      enabled: Boolean(factoryAddress && flatFee !== undefined && formValid),
     },
-    onError(error) {
-      setDeployLoading(false)
-    },
-  })
+  });
 
-  const { data, write, isLoading: isWriteLoading, isError } = useContractWrite(config);
+  const prepareError = simulateError;
+  const { writeContractAsync, data: hash, isError: isWriteError } = useWriteContract();
 
   useEffect(() => {
-    if (isError)
+    if (isWriteError)
       setDeployLoading(false)
-  }, [isError])
-
-
-  useEffect(() => {
-    if (result?.data) {
-      setFlatFee(result?.data);
-    }
-  }, [result])
+  }, [isWriteError])
 
   const tokenNameValidation = (input: string) => {
     if (input == "") {
@@ -158,42 +155,61 @@ export default function StandardToken() {
     if (!checkValidation())
       return;
 
-    if (isPrepareError) {
+    if (isPrepareError || !simulation?.request) {
       console.log('Create fair launch error', prepareError?.message)
+      void prepareRefetch();
       return;
     }
     setDeployLoading(true);
-    write?.()
+    pendingTxHashRef.current = undefined;
+    void (async () => {
+      try {
+        const txHash = await writeContractAsync(simulation.request);
+        pendingTxHashRef.current = txHash;
+      } catch {
+        setDeployLoading(false);
+      }
+    })();
 
   }
-  const { isLoading } = useWaitForTransaction({
-    chainId: chainId,
+  const { isSuccess: isReceiptSuccess, isError: isReceiptError } = useWaitForTransactionReceipt({
+    chainId,
     confirmations: 10,
-    hash: data?.hash,
-    onSuccess(txData) {
-      console.log('hash:', data?.hash)
-      setDeployLoading(false);
-    },
-    onError(error) {
-      setDeployLoading(false);
-      console.log(`Create fairlaunch Error:`, error?.message)
-    },
-  })
+    hash,
+  });
 
-  const unwatch = useContractEvent({
-    address: evmTokenContractData[chainId]?.stdTokenFactoryAddress as Address,
+  useEffect(() => {
+    if (isReceiptSuccess) {
+      console.log('hash:', hash)
+      setDeployLoading(false);
+    }
+  }, [isReceiptSuccess, hash]);
+
+  useEffect(() => {
+    if (isReceiptError) {
+      setDeployLoading(false);
+    }
+  }, [isReceiptError]);
+
+  useWatchContractEvent({
+    address: factoryAddress,
     abi: stdTokenFactoryAbi,
     eventName: 'TokenCreated',
-    listener(logs) {
+    chainId,
+    onLogs(logs) {
+      const log = logs[0];
+      if (!log?.args) return;
+      const expected = pendingTxHashRef.current;
+      if (!expected || log.transactionHash !== expected) return;
+      const token = log.args.token as Address;
       setDeployLoading(false);
       setOpen(true);
-      setCreatedTx(logs[0].transactionHash)
-      setCreatedTokenAddress(logs[0].args["token"])
-      setTokenName("")
-      setTokenSymbol("")
-      setTotalSupply(0)
-      setDecimal(18)
-      unwatch?.();
+      setCreatedTx(log.transactionHash);
+      setCreatedTokenAddress(token);
+      setTokenName("");
+      setTokenSymbol("");
+      setTotalSupply(0);
+      setDecimal(18);
     },
   })
 
@@ -308,11 +324,7 @@ export default function StandardToken() {
                 chainInfoList.map((item: any, index: number) => {
                   return <Option className="flex flex-row items-center gap-2" key={index} value={item.chainId}
                     onClick={() => {
-                      if (switchNetwork) {
-                        switchNetwork(Number(item.chainId));
-                      } else {
-                        console.error('Network switching is not available.');
-                      }
+                      switchChain?.({ chainId: Number(item.chainId) });
                     }}>
                     <Image src={item.icon} alt={item.icon} className="w-[30px] h-[30px] rounded-full" />
                     <p>

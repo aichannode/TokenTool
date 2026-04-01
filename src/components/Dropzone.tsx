@@ -3,10 +3,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone'
 import { CSSProperties } from 'react';
-import { useStorageUpload } from "@thirdweb-dev/react";
+import { uploadFilesToGateway } from "@/global/thirdwebStorage";
 import { Spinner } from "@material-tailwind/react";
-import path from 'path';
-import Image from 'next/image';
 
 const baseStyle: CSSProperties = {
     flex: 1,
@@ -39,15 +37,11 @@ const rejectStyle = {
 
 export default function StyledDropzone(props: any) {
     const { metadata, setMetadata } = props;
-    const { mutateAsync: upload } = useStorageUpload();
     const [isLoading, setIsLoading] = useState(false);
     const [paths, setPaths] = useState([]);
     const uploadToIpfs = async (file: any) => {
         setIsLoading(true);
-        const uploadUrl = await upload({
-            data: [file],
-            options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-        });
+        const uploadUrl = await uploadFilesToGateway([file]);
         setMetadata(uploadUrl)
         setIsLoading(false)
     };

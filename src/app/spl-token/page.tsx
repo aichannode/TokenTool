@@ -8,7 +8,7 @@ import { Keypair, LAMPORTS_PER_SOL, PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram
 import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMintInstruction, getMinimumBalanceForRentExemptMint, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createMintToInstruction, getAssociatedTokenAddressSync, createBurnInstruction, createSyncNativeInstruction, createTransferInstruction } from '@solana/spl-token';
 import { createCreateMetadataAccountV3Instruction, PROGRAM_ID } from '@metaplex-foundation/mpl-token-metadata';
 import StyledDropzone from "../../components/Dropzone";
-import { useStorageUpload } from "@thirdweb-dev/react";
+import { uploadFilesToGateway } from "@/global/thirdwebStorage";
 import { createSetAuthorityInstruction, AuthorityType } from '@solana/spl-token';
 import Footer from "@/components/Footer";
 
@@ -53,8 +53,6 @@ export default function SplToken() {
     setDecimals(decimalNum.toString());
   }, [sliderValue])
 
-
-  const { mutateAsync: upload } = useStorageUpload();
 
   const onCreateTokenClick = useCallback(async (form: any) => {
     if (!publicKey) {
@@ -267,10 +265,7 @@ export default function SplToken() {
     const jsonString = JSON.stringify(metadata);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const file = new File([blob], "metadata.json", { type: "application/json" });
-    const uploadUrl = await upload({
-      data: [file],
-      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-    });
+    const uploadUrl = await uploadFilesToGateway([file]);
 
 
     onCreateTokenClick({ decimals: Number(decimals), amount: Number(amount), metadata: uploadUrl, symbol: symbol, tokenName: tokenName })
