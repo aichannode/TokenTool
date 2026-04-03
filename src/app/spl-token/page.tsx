@@ -285,16 +285,16 @@ export default function SplToken() {
 
   return (
     <div className="flex flex-col items-center px-[20px] pt-[60px] md:pt-[80px]">
-      <Dialog className="bg-zinc-900/95 flex flex-col justify-center items-center border border-zinc-700" open={loading} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+      <Dialog className="neon-panel flex flex-col justify-center items-center" open={loading} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
         <Spinner onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} />
-        <p className="text-zinc-200 text-[20px] mt-[20px]">
+        <p className="text-slate-300 text-[20px] mt-[20px]">
           {loadingMessage}
         </p>
       </Dialog>
-      <p className="text-[30px] md:text-[40px] text-zinc-100 font-[700] mt-[20px]">
+      <p className="text-[30px] md:text-[40px] font-[800] neon-text-gradient mt-[20px]">
         {tokenInfoList[1].title}
       </p>
-      <p className="w-full md:w-[800px] text-[16px]  md:text-[18px] text-zinc-500 font-[500] mt-[20px]">
+      <p className="w-full md:w-[800px] text-[16px]  md:text-[18px] text-slate-500 font-[500] mt-[20px]">
         {tokenInfoList[1].info}
       </p>
       {/* <div className="flex flex-wrap items-center gap-2 mt-[20px]">
@@ -309,23 +309,23 @@ export default function SplToken() {
       <div className="mt-[20px]">
         <WalletMultiButton />
       </div>
-      <div className="border border-zinc-700 bg-zinc-900/60 rounded-xl w-full md:w-[800px] mt-[20px]">
+      <div className="neon-surface w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-zinc-100 text-[20px] md:text-[24px] font-[700]">
+          <p className="text-slate-200 text-[20px] md:text-[24px] font-[700]">
             Token Information
           </p>
-          <p className="text-zinc-300 text-[16px] md:text-[20px]">
+          <p className="text-slate-400 text-[16px] md:text-[20px]">
             Basic Information about your token
           </p>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="w-full flex flex-row items-center">
           <div className="w-full p-[20px]">
-            <p className="font-[500] text-[18px] text-zinc-300">
+            <p className="font-[500] text-[18px] text-slate-400">
               Token Name
             </p>
             <input
-              type="text" placeholder="dogwifhat" value={tokenName} className="w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]"
+              type="text" placeholder="dogwifhat" value={tokenName} className="w-full neon-input"
               onChange={(e) => {
                 tokenNameValidation(e.target.value)
                 setTokenName(e.target.value)
@@ -335,11 +335,11 @@ export default function SplToken() {
             </p>
           </div>
           <div className="w-full p-[20px]">
-            <p className="font-[500] text-[18px] text-zinc-300">
+            <p className="font-[500] text-[18px] text-slate-400">
               Token Symbol
             </p>
             <input
-              type="text" placeholder="WIF" value={symbol} className="w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]"
+              type="text" placeholder="WIF" value={symbol} className="w-full neon-input"
               onChange={(e) => {
                 setSymbol(e.target.value)
                 tokenSymbolValidation(e.target.value)
@@ -349,12 +349,12 @@ export default function SplToken() {
             </p>
           </div>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="gap-4 p-[20px]">
-          <p className="font-[500] text-[18px] text-zinc-300">
+          <p className="font-[500] text-[18px] text-slate-400">
             Custom Decimals
           </p>
-          <p className="font-[500] text-[14px] text-zinc-500">
+          <p className="font-[500] text-[14px] text-slate-500">
             Change the number of decimals for your token.
           </p>
           <div className="flex flex-row items-center gap-2">
@@ -369,7 +369,7 @@ export default function SplToken() {
               placeholder={""}
               onPointerEnterCapture={() => { }}
               onPointerLeaveCapture={() => { }} />
-            <p className="font-[700] text-[20px] text-zinc-300">
+            <p className="font-[700] text-[20px] text-slate-400">
               {decimal}
             </p>
           </div>
@@ -377,12 +377,12 @@ export default function SplToken() {
             {decimalsValidationMsg}
           </p>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="w-full p-[20px]">
-          <p className="font-[500] text-[18px] text-zinc-300">
+          <p className="font-[500] text-[18px] text-slate-400">
             Token Supply
           </p>
-          <input type="number" placeholder="100000" value={amount} className="w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]"
+          <input type="number" placeholder="100000" value={amount} className="w-full neon-input"
             onChange={(e: any) => {
               setAmount(parseInt(e.target.value))
               totalSupplyValidation(e.target.value)
@@ -395,18 +395,18 @@ export default function SplToken() {
         </div>
       </div>
 
-      <div className="border border-zinc-700 bg-zinc-900/60 rounded-xl w-full md:w-[800px] mt-[20px]">
+      <div className="neon-surface w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-zinc-100 text-[20px] md:text-[24px] font-[700]">
+          <p className="text-slate-200 text-[20px] md:text-[24px] font-[700]">
             Additional Metadata
           </p>
-          <p className="text-zinc-300 text-[16px] md:text-[20px]">
+          <p className="text-slate-400 text-[16px] md:text-[20px]">
             Additional details about your token.
           </p>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="p-[20px]">
-          <p className="text-[16px] text-zinc-300">
+          <p className="text-[16px] text-slate-400">
             Custom Logo (Optional)
           </p>
           <StyledDropzone metadata={metadataImage} setMetadata={setMetadataImage} />
@@ -416,13 +416,13 @@ export default function SplToken() {
             }
           </p>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="p-[20px]">
-          <p className="text-[16px] text-zinc-300">
+          <p className="text-[16px] text-slate-400">
             Token Description
           </p>
           <div className="flex flex-row justify-between items-center">
-            <p className="text-[14px] text-zinc-400">
+            <p className="text-[14px] text-slate-500">
               Add Custom token description
             </p>
             <Switch
@@ -436,7 +436,7 @@ export default function SplToken() {
           </div>
           {
             enableTokenDescription &&
-            <textarea placeholder="Token Descrition here" className="w-full h-[100px] border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]"
+            <textarea placeholder="Token Descrition here" className="w-full h-[100px] neon-input"
               onChange={(e) => {
                 setTokenDescription(e.target.value)
               }} />
@@ -444,23 +444,23 @@ export default function SplToken() {
         </div>
       </div>
 
-      <div className="border border-zinc-700 bg-zinc-900/60 rounded-xl w-full md:w-[800px] mt-[20px]">
+      <div className="neon-surface w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-zinc-100 text-[20px] md:text-[24px] font-[700]">
+          <p className="text-slate-200 text-[20px] md:text-[24px] font-[700]">
             Options
           </p>
-          <p className="text-zinc-300 text-[16px] md:text-[20px]">
+          <p className="text-slate-400 text-[16px] md:text-[20px]">
             Extra options for your token.
           </p>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="p-[20px]">
           <div className="flex flex-row items-center justify-between">
             <div>
-              <p className="text-zinc-400 text-[14px]">
+              <p className="text-slate-500 text-[14px]">
                 Revoke Freeze Authority (Free)
               </p>
-              <p className="text-zinc-500 text-14px">
+              <p className="text-slate-500 text-14px">
                 Renounce the ability to freeze holder wallets. Required for liquidity pool creation.
               </p>
             </div>
@@ -474,14 +474,14 @@ export default function SplToken() {
               onPointerLeaveCapture={() => { }} />
           </div>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="p-[20px]">
           <div className="flex flex-row items-center justify-between">
             <div>
-              <p className="text-zinc-400 text-[14px]">
+              <p className="text-slate-500 text-[14px]">
                 Revoke Mint Authority (Free)
               </p>
-              <p className="text-zinc-500 text-14px">
+              <p className="text-slate-500 text-14px">
                 Renounce the ability to mint more tokens for added safety & trust.
               </p>
             </div>
@@ -495,14 +495,14 @@ export default function SplToken() {
               onPointerLeaveCapture={() => { }} />
           </div>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="p-[20px]">
           <div className="flex flex-row items-center justify-between">
             <div>
-              <p className="text-zinc-400 text-[14px]">
+              <p className="text-slate-500 text-[14px]">
                 Enable Metaplex Metadata (Enabled)
               </p>
-              <p className="text-zinc-500 text-14px">
+              <p className="text-slate-500 text-14px">
                 Registers your token on the Metaplex Protocol for visibility & discoverability.
               </p>
             </div>
@@ -516,14 +516,14 @@ export default function SplToken() {
               onPointerLeaveCapture={() => { }} />
           </div>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="p-[20px]">
           <div className="flex flex-row items-center justify-between">
             <div>
-              <p className="text-zinc-400 text-[14px]">
+              <p className="text-slate-500 text-[14px]">
                 Immutable Metadata
               </p>
-              <p className="text-zinc-500 text-14px">
+              <p className="text-slate-500 text-14px">
                 Lock token metadata for added security & trust.
               </p>
             </div>
@@ -539,33 +539,31 @@ export default function SplToken() {
         </div>
       </div>
 
-      <div className="border border-zinc-700 bg-zinc-900/60 rounded-xl w-full md:w-[800px] mt-[20px]">
+      <div className="neon-surface w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-zinc-100 text-[20px] md:text-[24px] font-[700]">
+          <p className="text-slate-200 text-[20px] md:text-[24px] font-[700]">
             Deploy Token
           </p>
-          <p className="text-zinc-300 text-[16px] md:text-[20px]">
+          <p className="text-slate-400 text-[16px] md:text-[20px]">
             Ready to deploy?
           </p>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="p-[20px]">
-          <p className="text-zinc-400 text-[12px] md:text-[16px] font-[500] text-center">
+          <p className="text-slate-500 text-[12px] md:text-[16px] font-[500] text-center">
             0.3 SOL
           </p>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="flex flex-col items-center p-[20px]">
           {
             !connected ?
               <WalletMultiButton />
               :
               <div className="flex flex-row items-center gap-5">
-                <button className="w-[150px] h-[50px] bg-blue-900 hover:bg-zinc-800 rounded-md"
+                <button className="neon-btn-primary w-[150px] h-[50px] text-[18px]"
                   onClick={handleCreateToken}>
-                  <p className="text-white text-[18px] font-700">
-                    Deploy Token
-                  </p>
+                  Deploy Token
                 </button>
 
                 <WalletMultiButton />
@@ -574,22 +572,20 @@ export default function SplToken() {
         </div>
       </div>
 
-      <div className="border border-zinc-700 bg-zinc-900/60 rounded-xl w-full md:w-[800px] mt-[20px]">
+      <div className="neon-surface w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-zinc-100 text-[20px] md:text-[24px] font-[700]">
+          <p className="text-slate-200 text-[20px] md:text-[24px] font-[700]">
             Add Liquidity
           </p>
-          <p className="text-zinc-300 text-[16px] md:text-[20px]">
+          <p className="text-slate-400 text-[16px] md:text-[20px]">
             Do you wanna add liquidity to Raydium?
           </p>
         </div>
-        <div className="w-full border-b border-zinc-800 " />
+        <div className="neon-hr " />
         <div className="p-[20px] flex items-center justify-center w-full">
-          <button className="w-[150px] h-[50px] bg-cyan-700 hover:bg-zinc-600 rounded-md mt-[20px]"
+          <button className="neon-btn-primary w-[150px] h-[50px] mt-[20px] text-[18px]"
             onClick={handleCreateToken}>
-            <p className="text-white text-[18px] font-700">
-              Add Liquidity
-            </p>
+            Add Liquidity
           </button>
         </div>
 
@@ -598,84 +594,84 @@ export default function SplToken() {
 
 
       <div className="flex flex-col gap-1 mt-[20px] w-full md:w-[800px]">
-        <h1 className="text-zinc-300 text-[15px] font-[700] w-full text-center">
+        <h1 className="text-slate-400 text-[15px] font-[700] w-full text-center">
           Create Solana Token
         </h1>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           Effortlessly create your Solana SPL Token with our 6+4 step process – no coding required.
         </h3>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           Customize your Solana Token exactly the way you envision it. It takes 1  minute, at an affordable cost.
         </h3>
-        <h1 className="text-zinc-300 text-[15px] font-[700] w-full text-center">
+        <h1 className="text-slate-400 text-[15px] font-[700] w-full text-center">
           How to use Solana Token Creator
         </h1>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           1. Connect your Solana wallet.
         </h3>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           2. Specify the desired name for your Token
         </h3>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           3. Indicate the symbol (max 8 characters).
         </h3>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           4. Select the decimals quantity (0 for Whitelist Token, 5 for utility Token, 9 for meme token).
         </h3>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           5. Provide a brief description for your SPL Token.
         </h3>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           6. Upload the image for your token (PNG).
         </h3>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           7. Determine the Supply of your Token.
         </h3>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           8. Click on deploy, accept the transaction and wait until your tokens ready.
         </h3>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           The cost of Token creation is 0.3 SOL, covering all fees for SPL Token Creation.
         </h3>
-        <h1 className="text-zinc-300 text-[15px] font-[700] w-full text-center">
+        <h1 className="text-slate-400 text-[15px] font-[700] w-full text-center">
           Revoke Freeze Authority:
         </h1>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           If you want to create a liquidity pool you will need to "Revoke Freeze Authority" of the Token, you can do that here. This is free on TokenTool!
         </h3>
-        <h1 className="text-zinc-300 text-[15px] font-[700] w-full text-center">
+        <h1 className="text-slate-400 text-[15px] font-[700] w-full text-center">
           Revoke Mint Authority:
         </h1>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           Revoking mint authority ensures that there can be no more tokens minted than the total supply. This provides security and peace of mind to buyers. This is also free on TokenTool!
         </h3>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           Once the creation process starts, it will only take a few seconds! Once complete, you will receive the total supply of the token in your wallet.
         </h3>
-        <h3 className="text-zinc-300 text-[15px]">
+        <h3 className="text-slate-400 text-[15px]">
           With our user-friendly platform, managing your tokens is simple and affordable. Using your wallet, you can easily create tokens, increase their supply, or freeze them as needed. Discover the ease of Solana Token creation with us
         </h3>
 
       </div>
       <Footer />
-      <Dialog open={open} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="!bg-zinc-900 border border-zinc-700">
-        <DialogHeader placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="text-zinc-100">
+      <Dialog open={open} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="neon-panel">
+        <DialogHeader placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="text-slate-200">
           Token creted successfully!
         </DialogHeader>
-        <DialogBody className="flex flex-col gap-2 font-[500] text-[18px] text-zinc-200" placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
-          <button className="w-full h-[50px] rounded-full bg-blue-800 text-white" onClick={openTokenOnScan}>
+        <DialogBody className="flex flex-col gap-2 font-[500] text-[18px] text-slate-300" placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+          <button className="neon-btn-primary w-full h-[50px] text-[15px]" onClick={openTokenOnScan}>
             Open Token on Solscan
           </button>
-          <button className="w-full h-[50px] rounded-full bg-zinc-800 text-zinc-100 hover:bg-zinc-700" onClick={openTransactionOnScan}>
+          <button className="neon-btn-secondary w-full h-[50px] text-[15px]" onClick={openTransactionOnScan}>
             Open Transaction on Solscan
           </button>
-          <button className="w-full h-[50px] rounded-full bg-red-800 text-white" onClick={() => setOpen(false)}>
+          <button className="w-full h-[50px] rounded-full border border-rose-500/35 bg-rose-950/50 text-rose-200 hover:bg-rose-900/40 hover:shadow-[0_0_20px_rgba(244,63,94,0.2)] transition-all" onClick={() => setOpen(false)}>
             Close
           </button>
         </DialogBody>
       </Dialog>
-      <Dialog open={balanceModalOpen} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="!bg-zinc-900 border border-zinc-700">
-        <DialogBody placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="text-zinc-300">
+      <Dialog open={balanceModalOpen} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="neon-panel">
+        <DialogBody placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="text-slate-400">
           You need at least 0.3 sol to create your token
         </DialogBody>
         <DialogFooter placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>

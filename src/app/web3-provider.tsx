@@ -74,8 +74,8 @@ export function WalletContextProvider({ children }: { children: React.ReactNode 
               <QueryClientProvider client={queryClient}>
                 <RainbowKitProvider
                   theme={darkTheme({
-                    accentColor: '#3b82f6',
-                    accentColorForeground: 'white',
+                    accentColor: '#2dd4bf',
+                    accentColorForeground: '#0f172a',
                     borderRadius: 'medium',
                   })}
                   coolMode

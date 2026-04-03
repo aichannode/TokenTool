@@ -484,34 +484,34 @@ export default function LiquidityManager() {
 
     return (
         <div className="min-h-screen flex flex-col items-center pt-[60px] md:pt-[80px] px-[20px]">
-            <p className="text-[30px] md:text-[40px] text-zinc-100 font-[700] mt-[20px]">
+            <p className="text-[30px] md:text-[40px] font-[800] neon-text-gradient mt-[20px]">
                 Solana Liquidity Manager
             </p>
-            <p className="w-full md:w-[800px] text-[16px]  md:text-[18px] text-zinc-400 font-[500] mt-[20px]">
+            <p className="w-full md:w-[800px] text-[16px]  md:text-[18px] text-slate-500 font-[500] mt-[20px]">
                 Automatically create and fund the liquidity pool, this will allow users to buy your token.
             </p>
             <div className="mt-[20px]">
                 <WalletMultiButton />
             </div>
-            <div className="border border-zinc-700 bg-zinc-900/60 rounded-xl w-full md:w-[800px] mt-[20px]">
+            <div className="neon-surface w-full md:w-[800px] mt-[20px]">
                 <div className="p-[20px]">
-                    <p className="text-zinc-100 text-[20px] md:text-[24px] font-[700]">
+                    <p className="text-slate-200 text-[20px] md:text-[24px] font-[700]">
                         Add Liquidity
                     </p>
-                    <p className="text-zinc-300 text-[16px] md:text-[20px]">
+                    <p className="text-slate-400 text-[16px] md:text-[20px]">
                         Automatically create and fund the liqudity pool, this will allow users to buy your token.
                     </p>
                 </div>
                 {
                     <div>
-                        <div className="w-full border-b border-zinc-800 " />
+                        <div className="neon-hr " />
                         <div className="p-[20px]">
                             <div className="flex flex-col w-full">
                                 <p className="w-full">
                                     Select or Input Token Address
                                 </p>
                                 <div className="mt-[10px]">
-                                    <div className="w-full h-[40px] flex flex-row items-center gap-2 border border-zinc-600 rounded-md bg-zinc-950/50">
+                                    <div className="neon-inset w-full h-[40px] flex flex-row items-center gap-2 rounded-md">
 
                                         <input autoComplete="on" list="suggestions" className="w-full h-full outline-none rounded-md p-[10px]" onChange={(e) => {
                                             setTokenPair(e.target.value)
@@ -528,9 +528,9 @@ export default function LiquidityManager() {
                                 {
                                     tokenPair && validateToken &&
                                     <div className="mt-[10px]">
-                                        <p className="text-[14px] text-zinc-400">Token Name: {tokenName}</p>
-                                        <p className="text-[14px] text-zinc-400">Token Symbol: {tokenSymbol}</p>
-                                        <p className="text-[14px] text-zinc-400">Total Supply: {totalSupply}</p>
+                                        <p className="text-[14px] text-slate-500">Token Name: {tokenName}</p>
+                                        <p className="text-[14px] text-slate-500">Token Symbol: {tokenSymbol}</p>
+                                        <p className="text-[14px] text-slate-500">Total Supply: {totalSupply}</p>
                                     </div>
                                 }
                                 {
@@ -543,13 +543,13 @@ export default function LiquidityManager() {
                                 }
                             </div>
                         </div>
-                        <div className="w-full border-b border-zinc-800 " />
+                        <div className="neon-hr " />
                         <div className="p-[20px]">
                             <div className="flex flex-col items-start">
-                                <p className="text-zinc-300 text-[14px] md:text-[16px] font-[600]">
+                                <p className="text-slate-400 text-[14px] md:text-[16px] font-[600]">
                                     Token Paring & Funding
                                 </p>
-                                <p className="text-zinc-400 text-[12px] md:text-[16px] font-[500]">
+                                <p className="text-slate-500 text-[12px] md:text-[16px] font-[500]">
                                     Pair a percentage of your token supply with SOL to fund the liquidity pool, We recommend pairing at least 10% of your token supply with at least 1SOL.
                                 </p>
                             </div>
@@ -585,43 +585,43 @@ export default function LiquidityManager() {
                                             }}
                                             value={solAmount}
                                             type="number"
-                                            className=" w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-1 md:mt-2 rounded-[6px]" />
+                                            className="w-full neon-input mt-1 md:mt-2" />
                                     </div>
                                 </div>
 
                             </div>
                             <div className="flex flex-row items-center gap-2 mt-[20px]">
-                                <div className="flex flex-col items-end w-full p-[10px] border border-zinc-700 rounded-xl bg-zinc-950/40">
+                                <div className="neon-inset flex flex-col items-end w-full p-[10px] rounded-xl">
                                     <div className="flex flex-col items-end">
-                                        <p className="text-[18px] text-zinc-300">
+                                        <p className="text-[18px] text-slate-400">
                                             Token
                                         </p>
-                                        <p className="text-[18px] text-zinc-300">
+                                        <p className="text-[18px] text-slate-400">
                                             {tokenAmount}
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex flex-col items-start w-full p-[10px] border border-zinc-700 rounded-xl bg-zinc-950/40">
+                                <div className="neon-inset flex flex-col items-start w-full p-[10px] rounded-xl">
                                     <div className="flex flex-col items-start">
-                                        <p className="text-[18px] text-zinc-300">
+                                        <p className="text-[18px] text-slate-400">
                                             SOL
                                         </p>
-                                        <p className="text-[18px] text-zinc-300">
+                                        <p className="text-[18px] text-slate-400">
                                             {solAmount}
                                         </p>
                                     </div>
                                 </div>
                             </div>
-                            <div className="mt-[20px] text-zinc-400 text-[16px]">
+                            <div className="mt-[20px] text-slate-500 text-[16px]">
                                 Based on the selected options and values above, your token will launch with the following initial parameters, including the starting market cap and the starting price of your token.
                             </div>
                             <div className="flex flex-col md:flex-row items-center gap-2 mt-[20px]">
-                                <div className="flex flex-col items-start w-full p-[10px] border border-zinc-700 rounded-xl bg-zinc-950/40">
+                                <div className="neon-inset flex flex-col items-start w-full p-[10px] rounded-xl">
                                     <div className="flex flex-col items-start">
-                                        <p className="text-[16px] text-zinc-100">
+                                        <p className="text-[16px] text-slate-200">
                                             Launch Market Cap
                                         </p>
-                                        <p className="text-[16px] text-zinc-100">
+                                        <p className="text-[16px] text-slate-200">
                                             {launchMarketcap} SOL
                                             <span className="text-[14px]">
                                                 (~ {launchMarketcapUSD} USD)
@@ -629,12 +629,12 @@ export default function LiquidityManager() {
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex flex-col items-start w-full p-[10px] border border-zinc-700 rounded-xl bg-zinc-950/40">
+                                <div className="neon-inset flex flex-col items-start w-full p-[10px] rounded-xl">
                                     <div className="flex flex-col items-start">
-                                        <p className="text-[16px] text-zinc-100">
+                                        <p className="text-[16px] text-slate-200">
                                             Launch Token Price
                                         </p>
-                                        <p className="text-[16px] text-zinc-100">
+                                        <p className="text-[16px] text-slate-200">
                                             {launchTokenPrice} SOL
                                             <span className="text-[14px]">
                                                 (~{launchTokenPriceUSD} USD)
@@ -644,21 +644,21 @@ export default function LiquidityManager() {
                                 </div>
                             </div>
                         </div>
-                        <div className="w-full border-b border-zinc-800 " />
+                        <div className="neon-hr " />
                         <div className="p-[20px]">
-                            <p className="text-zinc-300 text-[14px] md:text-[16px] font-[600]">
+                            <p className="text-slate-400 text-[14px] md:text-[16px] font-[600]">
                                 DEX Exchange
                             </p>
-                            <p className="text-zinc-400 text-[12px] md:text-[16px] font-[500]">
+                            <p className="text-slate-500 text-[12px] md:text-[16px] font-[500]">
                                 We'll use the Raydium to create your liquidity pair and seed the initial pool.
                             </p>
                         </div>
-                        <div className="w-full border-b border-zinc-800 " />
+                        <div className="neon-hr " />
                         <div className="p-[20px]">
-                            <p className="text-zinc-300 text-[14px] md:text-[16px] font-[600]">
+                            <p className="text-slate-400 text-[14px] md:text-[16px] font-[600]">
                                 Liquidity Action & Ownership
                             </p>
-                            <p className="text-zinc-400 text-[12px] md:text-[16px] font-[500]">
+                            <p className="text-slate-500 text-[12px] md:text-[16px] font-[500]">
                                 By default, the liquidity will be sent to you. However, you can choose to burn the liquidity. We recommend burning the liquidity.
                             </p>
                             <div className="mt-[20px]">
@@ -685,16 +685,16 @@ export default function LiquidityManager() {
                         {/* {
               lpAction == "lock" &&
               <>
-                <div className="w-full border-b border-zinc-800 " />
+                <div className="neon-hr " />
                 <div className="p-[20px]">
-                  <p className="text-zinc-300 text-[14px] md:text-[16px] font-[600]">
+                  <p className="text-slate-400 text-[14px] md:text-[16px] font-[600]">
                     Lock Duration
                   </p>
-                  <p className="text-zinc-400 text-[12px] md:text-[16px] font-[500]">
+                  <p className="text-slate-500 text-[12px] md:text-[16px] font-[500]">
                     Let's decide on how long you want to lock the liquidity for. We recommend locking for at least 1 year. After the lock expires, you are free to withdraw the liquidity or lock it again.
                   </p>
                   <div className="flex flex-col md:flex-row items-center justify-between gap-2 md:gap-5 mt-[10px]">
-                    <input type="number" placeholder="100000" value={lockDurationAmount} className="w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]"
+                    <input type="number" placeholder="100000" value={lockDurationAmount} className="w-full neon-input"
                       onChange={(e: any) => {
                         setLockDurationAmount(parseInt(e.target.value))
                       }} />
@@ -708,42 +708,40 @@ export default function LiquidityManager() {
                 </div>
               </>
             } */}
-                        <div className="w-full border-b border-zinc-800 " />
+                        <div className="neon-hr " />
                         <div className="w-full flex flex-col items-center p-[20px]">
                             <div className="w-full md:w-[300px]">
                                 <div className="flex flex-row item-center justify-between">
-                                    <p className="text-[16px] text-zinc-100">
+                                    <p className="text-[16px] text-slate-200">
                                         Raydium Fee :
                                     </p>
-                                    <p className="text-[16px] text-zinc-100">
+                                    <p className="text-[16px] text-slate-200">
                                         0.2 SOL
                                     </p>
                                 </div>
                                 <div className="flex flex-row item-center justify-between">
-                                    <p className="text-[16px] text-zinc-100">
+                                    <p className="text-[16px] text-slate-200">
                                         Liquidity :
                                     </p>
-                                    <p className="text-[16px] text-zinc-100">
+                                    <p className="text-[16px] text-slate-200">
                                         {solAmount} SOL
                                     </p>
                                 </div>
-                                <p className="text-center text-zinc-100 mt-[10px] text-[20px]">
+                                <p className="text-center text-slate-400 mt-[10px] text-[20px]">
                                     {solAmount + 0.2} SOL
                                 </p>
                             </div>
                         </div>
-                        <div className="w-full border-b border-zinc-800 " />
+                        <div className="neon-hr " />
                         <div className="flex flex-col items-center p-[20px]">
                             {
                                 !connected ?
                                     <WalletMultiButton />
                                     :
                                     <div className="flex flex-row items-center gap-5">
-                                        <button className={`w-[150px] h-[50px] ${enableAddLiquidity ? 'bg-blue-900  hover:bg-zinc-800 ' : 'bg-zinc-600 cursor-not-allowed'}  rounded-md`}
+                                        <button className={`w-[150px] h-[50px] text-[18px] ${enableAddLiquidity ? 'neon-btn-primary' : 'rounded-md border border-teal-500/10 bg-slate-800/50 text-slate-500 cursor-not-allowed'}`}
                                             onClick={() => enableAddLiquidity && handleAddLiquidity()}>
-                                            <p className="text-white text-[18px] font-700">
-                                                Add Liquidity
-                                            </p>
+                                            Add Liquidity
                                         </button>
                                         <WalletMultiButton />
                                     </div>

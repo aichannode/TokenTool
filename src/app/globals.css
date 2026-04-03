@@ -2,17 +2,129 @@
 @tailwind components;
 @tailwind utilities;
 
-html.dark body {
-    background-color: #09090b !important;
-    color: #fafafa;
+/* Softer contrast + neon atmosphere */
+html.dark body,
+html.dark body.app-body {
+  background:
+    radial-gradient(ellipse 130% 90% at 50% -25%, rgba(45, 212, 191, 0.09), transparent 55%),
+    radial-gradient(ellipse 70% 55% at 100% 20%, rgba(167, 139, 250, 0.07), transparent 50%),
+    radial-gradient(ellipse 55% 45% at -5% 85%, rgba(244, 114, 182, 0.06), transparent 45%),
+    linear-gradient(180deg, #0a0d14 0%, #0c1020 40%, #090b12 100%) !important;
+  color: #9ca8b8;
 }
 
 button {
-    background-color: transparent;
+  background-color: transparent;
 }
 
-/* Solana wallet modal — closer match to dark UI */
+@layer components {
+  /* Frosted panels with teal / violet edge glow (not harsh white) */
+  .neon-surface {
+    @apply rounded-xl backdrop-blur-md transition-all duration-300;
+    background: rgba(30, 41, 59, 0.38);
+    border: 1px solid rgba(94, 234, 212, 0.14);
+    box-shadow:
+      0 0 0 1px rgba(45, 212, 191, 0.05),
+      0 4px 28px rgba(0, 0, 0, 0.35),
+      0 0 36px rgba(45, 212, 191, 0.05);
+  }
+
+  .neon-surface:hover {
+    border-color: rgba(94, 234, 212, 0.22);
+    box-shadow:
+      0 0 0 1px rgba(45, 212, 191, 0.08),
+      0 6px 32px rgba(0, 0, 0, 0.4),
+      0 0 44px rgba(45, 212, 191, 0.08);
+  }
+
+  /* Clickable tiles: shift glow toward violet on hover */
+  .neon-surface.card-hover:hover {
+    border-color: rgba(167, 139, 250, 0.28);
+    box-shadow:
+      0 0 0 1px rgba(167, 139, 250, 0.1),
+      0 6px 32px rgba(0, 0, 0, 0.42),
+      0 0 52px rgba(167, 139, 250, 0.1);
+  }
+
+  .neon-hr {
+    @apply w-full border-b;
+    border-color: rgba(94, 234, 212, 0.08);
+  }
+
+  .neon-input {
+    @apply w-full rounded-md p-[8px] outline-none mt-[8px] text-slate-300;
+    background: rgba(15, 23, 42, 0.42);
+    border: 1px solid rgba(94, 234, 212, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
+  .neon-input::placeholder {
+    color: rgba(148, 163, 184, 0.55);
+  }
+
+  .neon-input:focus {
+    border-color: rgba(45, 212, 191, 0.4);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.03),
+      0 0 0 3px rgba(45, 212, 191, 0.12);
+  }
+
+  .neon-panel {
+    background: rgba(15, 23, 42, 0.92) !important;
+    border: 1px solid rgba(94, 234, 212, 0.18) !important;
+    box-shadow:
+      0 0 48px rgba(45, 212, 191, 0.07),
+      0 24px 48px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  .neon-btn-primary {
+    @apply rounded-full font-bold text-slate-100 transition-all duration-300;
+    background: linear-gradient(135deg, #0d9488 0%, #0891b2 45%, #6366f1 100%);
+    box-shadow:
+      0 0 20px rgba(45, 212, 191, 0.25),
+      0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  .neon-btn-primary:hover {
+    box-shadow:
+      0 0 28px rgba(45, 212, 191, 0.4),
+      0 6px 20px rgba(0, 0, 0, 0.4);
+    filter: brightness(1.06);
+  }
+
+  .neon-btn-secondary {
+    @apply rounded-full font-semibold text-slate-300 transition-all duration-300;
+    background: rgba(51, 65, 85, 0.45);
+    border: 1px solid rgba(94, 234, 212, 0.12);
+    box-shadow: 0 0 16px rgba(45, 212, 191, 0.06);
+  }
+
+  .neon-btn-secondary:hover {
+    border-color: rgba(94, 234, 212, 0.25);
+    background: rgba(51, 65, 85, 0.6);
+    color: #e2e8f0;
+  }
+
+  .neon-text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(115deg, #5eead4 0%, #67e8f9 35%, #c084fc 70%, #f472b6 100%);
+  }
+
+  .neon-header {
+    background: rgba(8, 11, 20, 0.78);
+    border-bottom: 1px solid rgba(94, 234, 212, 0.12);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(94, 234, 212, 0.06);
+  }
+
+  .neon-inset {
+    background: rgba(15, 23, 42, 0.35);
+    border: 1px solid rgba(94, 234, 212, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  }
+}
+
+/* Solana wallet modal */
 .wallet-adapter-modal-wrapper {
-    --wallet-adapter-modal-background: #18181b;
-    --wallet-adapter-modal-text: #fafafa;
+  --wallet-adapter-modal-background: #121826;
+  --wallet-adapter-modal-text: #c5cdd8;
 }

@@ -13,25 +13,29 @@ const baseStyle: CSSProperties = {
     alignItems: 'center',
     padding: '20px',
     borderWidth: 2,
-    borderRadius: 8,
-    borderColor: '#52525b',
+    borderRadius: 12,
+    borderColor: 'rgba(45, 212, 191, 0.22)',
     borderStyle: 'dashed',
-    backgroundColor: 'rgba(9, 9, 11, 0.5)',
-    color: '#a1a1aa',
+    backgroundColor: 'rgba(15, 23, 42, 0.35)',
+    color: '#94a3b8',
     outline: 'none',
-    transition: 'border .24s ease-in-out'
+    boxShadow: 'inset 0 0 24px rgba(45, 212, 191, 0.04)',
+    transition: 'border 0.2s ease, box-shadow 0.2s ease'
 };
 
 const focusedStyle = {
-    borderColor: '#2196f3'
+    borderColor: 'rgba(94, 234, 212, 0.55)',
+    boxShadow: 'inset 0 0 28px rgba(45, 212, 191, 0.08), 0 0 20px rgba(45, 212, 191, 0.12)'
 };
 
 const acceptStyle = {
-    borderColor: '#00e676'
+    borderColor: 'rgba(52, 211, 153, 0.7)',
+    boxShadow: '0 0 24px rgba(52, 211, 153, 0.2)'
 };
 
 const rejectStyle = {
-    borderColor: '#ff1744'
+    borderColor: 'rgba(251, 113, 133, 0.65)',
+    boxShadow: '0 0 20px rgba(251, 113, 133, 0.15)'
 };
 
 
@@ -71,7 +75,7 @@ export default function StyledDropzone(props: any) {
 
 
     return (
-        <section className="container text-zinc-300">
+        <section className="container text-slate-400">
             {
                 <>
                     <div {...getRootProps({ style })}>
@@ -92,8 +96,8 @@ export default function StyledDropzone(props: any) {
                                 onPointerLeaveCapture={() => { }} /> :
                         </div> :
                         <aside>
-                            <h4 className="text-zinc-200 font-semibold">Image Link</h4>
-                            <ul className='w-full md:w-[700px] break-words text-zinc-400 text-sm'>{metadata}</ul>
+                            <h4 className="text-slate-300 font-semibold">Image Link</h4>
+                            <ul className='w-full md:w-[700px] break-words text-slate-500 text-sm'>{metadata}</ul>
                         </aside>
                     }
                 </>

@@ -57,7 +57,7 @@ export default function RootLayout({
         />
         <meta property="twitter:image" content="/logo.png" />
       </head>
-      <body className="min-h-full bg-zinc-950 text-zinc-100 antialiased">
+      <body className="app-body min-h-full antialiased">
         <ContextProvider>
           <Header />
           {children}

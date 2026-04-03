@@ -59,34 +59,34 @@ export default function ContactUs() {
 
   return (
     <form onSubmit={emailSend} className="min-h-screen w-full flex flex-col items-center pt-[60px] md:pt-[80px] px-[20px]">
-      <h1 className="text-[30px] md:text-[40px] text-zinc-100 font-[700]  mt-[20px]">
+      <h1 className="text-[30px] md:text-[40px] font-[800] neon-text-gradient mt-[20px]">
         Contact US
       </h1>
       <div className="w-full md:w-[800px] flex flex-col items-start mt-[40px]">
-        <p className="text-zinc-300 font-medium">
+        <p className="text-slate-400 font-medium">
           Email
         </p>
         <input
-          type="email" name="to" placeholder="Type your email here" className="w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]" value={formData.to} onChange={handleChange} required
+          type="email" name="to" placeholder="Type your email here" className="w-full neon-input" value={formData.to} onChange={handleChange} required
         />
       </div>
       <div className="w-full md:w-[800px] flex flex-col items-start mt-[20px]">
-        <p className="text-zinc-300 font-medium">
+        <p className="text-slate-400 font-medium">
           Message
         </p>
         <textarea
-          placeholder="Type your message here" name="text" className="w-full h-[150px] border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]" value={formData.text} onChange={handleChange} required
+          placeholder="Type your message here" name="text" className="w-full h-[150px] neon-input" value={formData.text} onChange={handleChange} required
         />
       </div>
       <div className="w-full md:w-[800px] flex flex-col items-start mt-[40px]">
-        <p className="text-zinc-300 font-medium">
+        <p className="text-slate-400 font-medium">
           Robot Test - What is {randomNumber1}+{randomNumber2}?
         </p>
         <input
-          type="text" name="robotTest" placeholder="Type your answer here" className="w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]" value={formData.robotTest} onChange={handleChange} required
+          type="text" name="robotTest" placeholder="Type your answer here" className="w-full neon-input" value={formData.robotTest} onChange={handleChange} required
         />
       </div>
-      <button className="bg-blue-600 hover:bg-blue-500 w-[200px] h-[50px] rounded-lg text-white font-[700] text-[18px] mt-[20px] transition-colors" type="submit">
+      <button className="neon-btn-primary w-[200px] h-[50px] mt-[20px] text-[18px]" type="submit">
         Send Message
       </button>
     </form>
