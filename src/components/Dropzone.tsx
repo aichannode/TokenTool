@@ -13,11 +13,11 @@ const baseStyle: CSSProperties = {
     alignItems: 'center',
     padding: '20px',
     borderWidth: 2,
-    borderRadius: 2,
-    borderColor: '#eeeeee',
+    borderRadius: 8,
+    borderColor: '#52525b',
     borderStyle: 'dashed',
-    backgroundColor: '#fafafa',
-    color: '#bdbdbd',
+    backgroundColor: 'rgba(9, 9, 11, 0.5)',
+    color: '#a1a1aa',
     outline: 'none',
     transition: 'border .24s ease-in-out'
 };
@@ -71,7 +71,7 @@ export default function StyledDropzone(props: any) {
 
 
     return (
-        <section className="container">
+        <section className="container text-zinc-300">
             {
                 <>
                     <div {...getRootProps({ style })}>
@@ -92,8 +92,8 @@ export default function StyledDropzone(props: any) {
                                 onPointerLeaveCapture={() => { }} /> :
                         </div> :
                         <aside>
-                            <h4>Image Link</h4>
-                            <ul className='w-full md:w-[700px] break-words'>{metadata}</ul>
+                            <h4 className="text-zinc-200 font-semibold">Image Link</h4>
+                            <ul className='w-full md:w-[700px] break-words text-zinc-400 text-sm'>{metadata}</ul>
                         </aside>
                     }
                 </>

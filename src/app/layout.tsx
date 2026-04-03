@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark h-full">
       <head>
         {/* <!-- Primary Meta Tags --> */}
         <title>Ethereum &amp; Solana Token Tool</title>
@@ -57,7 +57,7 @@ export default function RootLayout({
         />
         <meta property="twitter:image" content="/logo.png" />
       </head>
-      <body className="bg-[#FBFBFB]">
+      <body className="min-h-full bg-zinc-950 text-zinc-100 antialiased">
         <ContextProvider>
           <Header />
           {children}

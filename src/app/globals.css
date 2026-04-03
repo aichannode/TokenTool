@@ -2,10 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    background-color: #FBFBFB !important;
+html.dark body {
+    background-color: #09090b !important;
+    color: #fafafa;
 }
 
 button {
     background-color: transparent;
+}
+
+/* Solana wallet modal — closer match to dark UI */
+.wallet-adapter-modal-wrapper {
+    --wallet-adapter-modal-background: #18181b;
+    --wallet-adapter-modal-text: #fafafa;
 }

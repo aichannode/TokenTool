@@ -24,12 +24,12 @@ export default function Header() {
 
 
     return (
-        <div className="fixed top-0 bg-white z-50 flex flex-row items-center justify-between px-[20px] md:px-[100px] w-full h-[60px] md:h-[80px] shadow-md md:shadow-xl">
+        <div className="fixed top-0 z-50 flex flex-row items-center justify-between px-[20px] md:px-[100px] w-full h-[60px] md:h-[80px] bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 shadow-lg shadow-black/20">
             <div className="flex gap-2 flex-row items-center hover:cursor-pointer" onClick={() => {
                 handleHome()
             }}>
                 <Image src={LogoImg} className="w-[30px] h-[30px]" alt="logo" />
-                <p className="text-[24px]  text-gray-900 font-[700]">
+                <p className="text-[24px] text-zinc-100 font-[700]">
                     TokenTool.io
                 </p>
             </div>
@@ -40,7 +40,7 @@ export default function Header() {
                         menuList.map((item: any, index: any) => {
                             return <Link key={index}
                                 href={item.router}
-                                className="flex flex-row items-center gap-2 text-[18px] font-[700] text-gray-600 ">
+                                className="flex flex-row items-center gap-2 text-[18px] font-[700] text-zinc-400 hover:text-zinc-100 transition-colors">
                                 {item.icon != "" && <Image src={item.icon} alt={item.name} className="w-[30px] h-[30px] rounded-full" />}
                                 {item.name}
                             </Link>
@@ -54,54 +54,54 @@ export default function Header() {
                     <div></div>
                     :
                     <div className="focus:cursor-pointer" onClick={openDrawer}>
-                        <Image src={HamburgerIcon} className="w-[20px] h-[20px]" alt="menu" />
+                        <Image src={HamburgerIcon} className="w-[20px] h-[20px] opacity-90 invert" alt="menu" />
                     </div>
             }
             {/* <EvmWalletConnectButton /> */}
 
             <Drawer open={open} onClose={closeDrawer}
-                className="p-4"
+                className="p-4 !bg-zinc-900 border-r border-zinc-800"
                 placeholder={""}
                 onPointerEnterCapture={null}
                 onPointerLeaveCapture={null}>
-                <div className="flex flex-col items-start gap-2 px-[20px]">
-                    <button className="text-[18px] font-[500] mt-[60px]" onClick={() => {
+                <div className="flex flex-col items-start gap-2 px-[20px] text-zinc-200">
+                    <button className="text-[18px] font-[500] mt-[60px] text-left hover:text-white" onClick={() => {
                         router.push("/")
                         closeDrawer();
                     }}>
                         - Home
                     </button>
-                    <button className="text-[18px] font-[500]" onClick={() => {
+                    <button className="text-[18px] font-[500] text-left hover:text-white" onClick={() => {
                         router.push("/standard-token");
                         closeDrawer();
                     }}>
                         - EVM Token Creator
                     </button>
-                    <button className="text-[18px] font-[500]" onClick={() => {
+                    <button className="text-[18px] font-[500] text-left hover:text-white" onClick={() => {
                         router.push("/spl-token");
                         closeDrawer();
                     }}>
                         - Solana Token Creator
                     </button>
-                    <button className="text-[18px] font-[500]" onClick={() => {
+                    <button className="text-[18px] font-[500] text-left hover:text-white" onClick={() => {
                         router.push("/liquidity-manager");
                         closeDrawer();
                     }}>
                         - Solana Liquidity Manager
                     </button>
-                    <button className="text-[18px] font-[500]" onClick={() => {
+                    <button className="text-[18px] font-[500] text-left hover:text-white" onClick={() => {
                         router.push("/pricing");
                         closeDrawer();
                     }}>
                         - Pricing
                     </button>
-                    <button className="text-[18px] font-[500]" onClick={() => {
+                    <button className="text-[18px] font-[500] text-left hover:text-white" onClick={() => {
                         router.push("/contact-us");
                         closeDrawer();
                     }}>
                         - Contact Us
                     </button>
-                    <button className="text-[18px] font-[500]" onClick={() => {
+                    <button className="text-[18px] font-[500] text-left hover:text-white" onClick={() => {
                         router.push("/contact-us");
                         closeDrawer();
                     }} >

@@ -26,6 +26,7 @@ import { CoinbaseWalletAdapter, PhantomWalletAdapter, CloverWalletAdapter, Solfl
 import {
   getDefaultConfig,
   RainbowKitProvider,
+  darkTheme,
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
 import { AutoConnectProvider } from './AutoConnectProvider';
@@ -71,7 +72,15 @@ export function WalletContextProvider({ children }: { children: React.ReactNode 
           <WalletModalProvider>
             <WagmiProvider config={wagmiConfig}>
               <QueryClientProvider client={queryClient}>
-                <RainbowKitProvider coolMode modalSize="compact">
+                <RainbowKitProvider
+                  theme={darkTheme({
+                    accentColor: '#3b82f6',
+                    accentColorForeground: 'white',
+                    borderRadius: 'medium',
+                  })}
+                  coolMode
+                  modalSize="compact"
+                >
                   {children}
                 </RainbowKitProvider>
               </QueryClientProvider>

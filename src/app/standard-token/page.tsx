@@ -36,10 +36,6 @@ export default function StandardToken() {
   const factoryAddress = evmTokenContractData[chainId]?.stdTokenFactoryAddress as Address | undefined;
   const pendingTxHashRef = useRef<`0x${string}` | undefined>(undefined);
 
-  useEffect(() => {
-    console.log("🚀 ~ StandardToken ~ addLiquidityOption:", addLiquidityOption)
-  }, [addLiquidityOption])
-
   const { data: flatFee } = useReadContract({
     abi: stdTokenFactoryAbi,
     address: (factoryAddress ?? '0x0000000000000000000000000000000000000000') as Address,
@@ -238,10 +234,10 @@ export default function StandardToken() {
 
   return (
     <div className="flex flex-col items-center px-[20px] pt-[60px] md:pt-[80px] ">
-      <p className="text-[30px] md:text-[40px] text-gray-900 font-[700]  mt-[20px]">
+      <p className="text-[30px] md:text-[40px] text-zinc-100 font-[700]  mt-[20px]">
         {tokenInfoList[0].title}
       </p>
-      <h2 className="w-full md:w-[800px] text-[16px]  md:text-[18px] text-gray-500 font-[500] mt-[20px]">
+      <h2 className="w-full md:w-[800px] text-[16px]  md:text-[18px] text-zinc-400 font-[500] mt-[20px]">
         Our most popular token, includes all standard features from ERC20 standard token. Including Base, Ethereum, Blast and many more!
       </h2>
       {/* <div className="flex flex-wrap items-center gap-2 mt-[20px]">
@@ -258,19 +254,19 @@ export default function StandardToken() {
           <ConnectButton />
         }
       </div>
-      <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
+      <div className="border border-zinc-700 rounded-xl bg-zinc-900/60 w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
+          <p className="text-zinc-100 text-[20px] md:text-[24px] font-[700]">
             Token Information
           </p>
-          <p className="text-gray-800 text-[16px] md:text-[20px]">
+          <p className="text-zinc-300 text-[16px] md:text-[20px]">
             Basic Information about your token
           </p>
         </div>
-        <div className="w-full border-[1px] " />
+        <div className="w-full border-b border-zinc-800 " />
         <div className="w-full flex flex-row items-center">
           <div className="w-full p-[20px]">
-            <p className="font-[500] text-[18px] text-gray-800">
+            <p className="font-[500] text-[18px] text-zinc-300">
               Token Name
             </p>
             <input
@@ -281,13 +277,13 @@ export default function StandardToken() {
               value={tokenName}
               type="text"
               placeholder="Shiba Inu"
-              className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]" />
-            <p className="text-red-500 text-[14px]">
+              className="w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]" />
+            <p className="text-red-400 text-[14px]">
               {tokenNameValidateMsg}
             </p>
           </div>
           <div className="w-full p-[20px]">
-            <p className="font-[500] text-[18px] text-gray-800">
+            <p className="font-[500] text-[18px] text-zinc-300">
               Token Symbol
             </p>
             <input
@@ -298,15 +294,15 @@ export default function StandardToken() {
               value={tokenSymbol}
               type="text"
               placeholder="SHIB"
-              className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]" />
-            <p className="text-red-500 text-[14px]">
+              className="w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]" />
+            <p className="text-red-400 text-[14px]">
               {tokenSymbolValidateMsg}
             </p>
           </div>
         </div>
-        <div className="w-full border-[1px] " />
+        <div className="w-full border-b border-zinc-800 " />
         <div className="gap-4 p-[20px]">
-          <p className="font-[500] text-[18px] text-gray-800">
+          <p className="font-[500] text-[18px] text-zinc-300">
             Blockchain Network
           </p>
           <div className="mt-[20px]">
@@ -336,12 +332,12 @@ export default function StandardToken() {
             </Select >
           </div>
         </div>
-        <div className="w-full border-[1px] " />
+        <div className="w-full border-b border-zinc-800 " />
         <div className="gap-4 p-[20px]">
-          <p className="font-[500] text-[18px] text-gray-800">
+          <p className="font-[500] text-[18px] text-zinc-300">
             Custom Decimals
           </p>
-          <p className="font-[500] text-[14px] text-gray-500">
+          <p className="font-[500] text-[14px] text-zinc-400">
             Change the number of decimals for your token.
           </p>
           <div className="flex flex-row items-center gap-2">
@@ -356,28 +352,28 @@ export default function StandardToken() {
               placeholder={""}
               onPointerEnterCapture={() => { }}
               onPointerLeaveCapture={() => { }} />
-            <p className="font-[700] text-[20px] text-gray-800">
+            <p className="font-[700] text-[20px] text-zinc-300">
               {decimal}
             </p>
           </div>
-          <p className="text-red-500 text-[14px]">
+          <p className="text-red-400 text-[14px]">
             {decimalsValidationMsg}
           </p>
         </div>
       </div>
 
-      <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
+      <div className="border border-zinc-700 rounded-xl bg-zinc-900/60 w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
+          <p className="text-zinc-100 text-[20px] md:text-[24px] font-[700]">
             Token Supply
           </p>
-          <p className="text-gray-800 text-[16px] md:text-[20px]">
+          <p className="text-zinc-300 text-[16px] md:text-[20px]">
             Let's set the supply options for your token.
           </p>
         </div>
-        <div className="w-full border-[1px] " />
+        <div className="w-full border-b border-zinc-800 " />
         <div className="p-[20px]">
-          <p className="text-[16px] text-gray-800">
+          <p className="text-[16px] text-zinc-300">
             Total Supply
           </p>
           <input
@@ -389,35 +385,35 @@ export default function StandardToken() {
             }}
             type="number"
             placeholder="1000"
-            className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]" />
-          <p className="text-red-500 text-[14px]">
+            className="w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]" />
+          <p className="text-red-400 text-[14px]">
             {
               totalSupplyValidationMsg
             }
           </p>
-          {/* <p className="text-[16px] text-gray-800 mt-[10px]">
+          {/* <p className="text-[16px] text-zinc-300 mt-[10px]">
                         Maximum Supply
                     </p>
-                    <input type="text" placeholder="Awesome Token" className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]" /> */}
+                    <input type="text" placeholder="Awesome Token" className="w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]" /> */}
         </div>
       </div>
 
-      {/* <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
+      {/* <div className="border border-zinc-700 rounded-xl bg-zinc-900/60 w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
+          <p className="text-zinc-100 text-[20px] md:text-[24px] font-[700]">
             Liquidity Options
           </p>
-          <p className="text-gray-800 text-[16px] md:text-[20px]">
+          <p className="text-zinc-300 text-[16px] md:text-[20px]">
             Quickly add liquidity for your token.
           </p>
         </div>
-        <div className="w-full border-[1px] " />
+        <div className="w-full border-b border-zinc-800 " />
         <div className="p-[20px] flex flex-row items-center justify-between">
           <div className="flex flex-col items-start">
-            <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+            <p className="text-zinc-300 text-[14px] md:text-[16px] font-[600]">
               Add Initial Liquidity
             </p>
-            <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+            <p className="text-zinc-400 text-[12px] md:text-[16px] font-[500]">
               Automatically create and fund the liqudity pool, this will allow users to buy your token.
             </p>
           </div>
@@ -434,13 +430,13 @@ export default function StandardToken() {
         {
           addLiquidityOption &&
           <div>
-            <div className="w-full border-[1px] " />
+            <div className="w-full border-b border-zinc-800 " />
             <div className="p-[20px]">
               <div className="flex flex-col items-start">
-                <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+                <p className="text-zinc-300 text-[14px] md:text-[16px] font-[600]">
                   Token Paring & Funding
                 </p>
-                <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+                <p className="text-zinc-400 text-[12px] md:text-[16px] font-[500]">
                   Pair a percentage of your token supply with BNB to fundthe liquidity pool, We recommend pairing at least 10% of your token supply with at least 1 BNB.
                 </p>
               </div>
@@ -474,42 +470,42 @@ export default function StandardToken() {
                     }}
                     value={liquidityAmount}
                     type="number"
-                    className="w-full border-[1px] p-[8px] outline-none mt-[8px] rounded-[6px]" />
+                    className="w-full border border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 p-[8px] outline-none mt-[8px] rounded-[6px]" />
                 </div>
 
               </div>
               <div className="flex flex-row items-center gap-2 mt-[20px]">
                 <div className="flex flex-col items-end w-full p-[10px] border-[1px] rounded-xl">
                   <div className="flex flex-col items-end">
-                    <p className="text-[18px] text-gray-800">
+                    <p className="text-[18px] text-zinc-300">
                       Token
                     </p>
-                    <p className="text-[18px] text-gray-800">
+                    <p className="text-[18px] text-zinc-300">
                       43,000
                     </p>
                   </div>
                 </div>
                 <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
                   <div className="flex flex-col items-start">
-                    <p className="text-[18px] text-gray-800">
+                    <p className="text-[18px] text-zinc-300">
                       ETH
                     </p>
-                    <p className="text-[18px] text-gray-800">
+                    <p className="text-[18px] text-zinc-300">
                       19.90
                     </p>
                   </div>
                 </div>
               </div>
-              <div className="mt-[20px] text-gray-700 text-[16px]">
+              <div className="mt-[20px] text-zinc-400 text-[16px]">
                 Based on the selected options and values above, your token will launch with the following initial parameters, including the starting market cap and the starting price of your token.
               </div>
               <div className="flex flex-row items-center gap-2 mt-[20px]">
                 <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
                   <div className="flex flex-col items-start">
-                    <p className="text-[16px] text-gray-900">
+                    <p className="text-[16px] text-zinc-100">
                       Launch Market Cap
                     </p>
-                    <p className="text-[16px] text-gray-900">
+                    <p className="text-[16px] text-zinc-100">
                       46.28 ETH
                       <span className="text-[14px]">
                         (~176,248.28 USD)
@@ -519,10 +515,10 @@ export default function StandardToken() {
                 </div>
                 <div className="flex flex-col items-start w-full p-[10px] border-[1px] rounded-xl">
                   <div className="flex flex-col items-start">
-                    <p className="text-[16px] text-gray-900">
+                    <p className="text-[16px] text-zinc-100">
                       Launch Token Price
                     </p>
-                    <p className="text-[16px] text-gray-900">
+                    <p className="text-[16px] text-zinc-100">
                       0.000463ETH
                       <span className="text-[14px]">
                         (~1.76 USD)
@@ -532,12 +528,12 @@ export default function StandardToken() {
                 </div>
               </div>
             </div>
-            <div className="w-full border-[1px] " />
+            <div className="w-full border-b border-zinc-800 " />
             <div className="p-[20px]">
-              <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+              <p className="text-zinc-300 text-[14px] md:text-[16px] font-[600]">
                 DEX Exchange
               </p>
-              <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+              <p className="text-zinc-400 text-[12px] md:text-[16px] font-[500]">
                 We'll use the selected DEX to create your liquidity pair and seed the initial pool.
               </p>
               <div className="mt-[20px]">
@@ -568,12 +564,12 @@ export default function StandardToken() {
                 </Select >
               </div>
             </div>
-            <div className="w-full border-[1px] " />
+            <div className="w-full border-b border-zinc-800 " />
             <div className="p-[20px]">
-              <p className="text-gray-800 text-[14px] md:text-[16px] font-[600]">
+              <p className="text-zinc-300 text-[14px] md:text-[16px] font-[600]">
                 Liquidity Action & Ownership
               </p>
-              <p className="text-gray-700 text-[12px] md:text-[16px] font-[500]">
+              <p className="text-zinc-400 text-[12px] md:text-[16px] font-[500]">
                 By default, the liquidity will be sent to you. However, you can choose to burn or lock the liquidity. We recommend burning the liquidity, or locking for at least 1 year.
               </p>
             </div>
@@ -581,19 +577,19 @@ export default function StandardToken() {
         }
       </div> */}
 
-      <div className="border-[1px] rounded-xl border-[#AAA] bg-white w-full md:w-[800px] mt-[20px]">
+      <div className="border border-zinc-700 rounded-xl bg-zinc-900/60 w-full md:w-[800px] mt-[20px]">
         <div className="p-[20px]">
-          <p className="text-gray-900 text-[20px] md:text-[24px] font-[700]">
+          <p className="text-zinc-100 text-[20px] md:text-[24px] font-[700]">
             Deploy Token
           </p>
         </div>
-        <div className="w-full border-[1px] " />
+        <div className="w-full border-b border-zinc-800 " />
         <div className="p-[20px]">
-          <p className="text-center text-gray-900 text-[18px]">
+          <p className="text-center text-zinc-100 text-[18px]">
             {flatFee !== undefined ? formatUnits(flatFee, 18) : '0'} {evmTokenContractData[chainId].currencyName}
           </p>
         </div>
-        <div className="w-full border-[1px] " />
+        <div className="w-full border-b border-zinc-800 " />
         <div className="flex flex-col items-center p-[20px]">
           {
             isConnected ?
@@ -610,38 +606,38 @@ export default function StandardToken() {
         </div>
       </div>
       <div className="flex flex-col gap-1 mt-[20px] w-full md:w-[800px]">
-        <h2 className="text-gray-800 text-[15px]">
+        <h2 className="text-zinc-300 text-[15px]">
           Please note that some wallets won’t automatically show your token. You might have to import or unhide your custom tokens in the wallet settings.
         </h2>
         <p></p>
-        <h1 className="w-full text-gray-800 text-[15px] font-[700] text-center">
+        <h1 className="w-full text-zinc-300 text-[15px] font-[700] text-center">
           How to use EVM Ethereum Standard token creator
         </h1>
-        <h2 className="text-gray-800 text-[15px]">
+        <h2 className="text-zinc-300 text-[15px]">
           1 <span className="font-[700]">Connect Wallet</span>: Simply connect any supported wallet to our platform and you’ll be able to create your token in no time
         </h2>
-        <h2 className="text-gray-800 text-[15px]">
+        <h2 className="text-zinc-300 text-[15px]">
           2 <span className="font-[700]">Add token details</span>: Add basic details about your tokens such as the name, symbol decimals, and supply
         </h2>
-        <h2 className="text-gray-800 text-[15px]">
+        <h2 className="text-zinc-300 text-[15px]">
           3  <span className="font-[700]">Deploy</span>: Once deployed, your token will be available across the entire blockchain ecosystem
         </h2>
       </div>
-      <Dialog className="bg-transparent flex flex-col justify-center items-center" open={deployLoading} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+      <Dialog className="bg-zinc-900/95 flex flex-col justify-center items-center border border-zinc-700" open={deployLoading} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
         <Spinner onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} />
       </Dialog>
-      <Dialog open={open} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
-        <DialogHeader placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+      <Dialog open={open} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="!bg-zinc-900 border border-zinc-700">
+        <DialogHeader placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="text-zinc-100">
           Token creted successfully!
         </DialogHeader>
-        <DialogBody className="flex flex-col gap-2 font-[500] text-[18px]" placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+        <DialogBody className="flex flex-col gap-2 font-[500] text-[18px] text-zinc-200" placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
           <button className="w-full h-[50px] rounded-full bg-blue-800 text-white" onClick={openTokenOnScan}>
             Open Token on {explorerName(chainId)}
           </button>
-          <button className="w-full h-[50px] rounded-full bg-gray-100 text-black" onClick={handleAddTokenToWallet}>
+          <button className="w-full h-[50px] rounded-full bg-zinc-800 text-zinc-100 hover:bg-zinc-700" onClick={handleAddTokenToWallet}>
             Add Token to Wallet
           </button>
-          <button className="w-full h-[50px] rounded-full bg-gray-100 text-black" onClick={openTransactionOnScan}>
+          <button className="w-full h-[50px] rounded-full bg-zinc-800 text-zinc-100 hover:bg-zinc-700" onClick={openTransactionOnScan}>
             Open Transaction on {explorerName(chainId)}
           </button>
           <button className="w-full h-[50px] rounded-full bg-red-800 text-white" onClick={() => setOpen(false)}>
@@ -649,8 +645,8 @@ export default function StandardToken() {
           </button>
         </DialogBody>
       </Dialog>
-      <Dialog open={balanceModalOpen} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
-        <DialogBody placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>
+      <Dialog open={balanceModalOpen} handler={() => { }} placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="!bg-zinc-900 border border-zinc-700">
+        <DialogBody placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }} className="text-zinc-300">
           You need at least {priceList[chainId as keyof typeof priceList].price} {priceList[chainId as keyof typeof priceList].currency} to create your token
         </DialogBody>
         <DialogFooter placeholder={""} onPointerEnterCapture={() => { }} onPointerLeaveCapture={() => { }}>

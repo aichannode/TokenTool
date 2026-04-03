@@ -14,8 +14,8 @@ export default function TokenPanel(props: any) {
     }
 
     return (
-        <div className="w-full md:w-[800px] flex flex-col items-start p-[20px] border-[1px] rounded-xl cursor-pointer mt-[20px] bg-white focus:cursor-pointer" onClick={handleToken}>
-            <p className="w-full text-[20px] md:text-[24px] font-[700] text-center">
+        <div className="w-full md:w-[800px] flex flex-col items-start p-[20px] border border-zinc-700 rounded-xl cursor-pointer mt-[20px] bg-zinc-900/60 hover:bg-zinc-900 hover:border-zinc-600 transition-colors focus:cursor-pointer" onClick={handleToken}>
+            <p className="w-full text-[20px] md:text-[24px] font-[700] text-center text-zinc-100">
                 {title}
             </p>
             <div className="flex flex-col items-center w-full">
@@ -29,7 +29,7 @@ export default function TokenPanel(props: any) {
                     }
                 </div>
             </div>
-            <p className="text-[14px] md:text-[18px] font-[500] text-gray-500 text-start mt-[20px]">
+            <p className="text-[14px] md:text-[18px] font-[500] text-zinc-400 text-start mt-[20px]">
                 {info}
             </p>
 

@@ -21,13 +21,13 @@ export default function Footer() {
     return (
         <div className=" md:py-[20px]  w-full flex flexd-col  justify-center mt-[20px] md:mt-[100px]">
             <div className="flex flex-col  md:flex-row w-full md:w-[800px] items-start justify-between gap-2 ">
-                <button className="w-[200px] text-start text-gray-800 text-[16px] md:text-[20px] font-[600]" onClick={handlePrivacyPolicy} >
+                <button className="w-[200px] text-start text-zinc-400 hover:text-zinc-200 text-[16px] md:text-[20px] font-[600] transition-colors" onClick={handlePrivacyPolicy} >
                     Privacy Policy
                 </button>
-                <button className="w-[200px] text-start text-gray-800 text-[16px] md:text-[20px] font-[600]" onClick={handleTermsAndConditions} >
+                <button className="w-[200px] text-start text-zinc-400 hover:text-zinc-200 text-[16px] md:text-[20px] font-[600] transition-colors" onClick={handleTermsAndConditions} >
                     Terms & Conditions
                 </button>
-                <button className="w-[200px] text-start text-gray-800 text-[16px] md:text-[20px] font-[600]" onClick={handleContactUs} >
+                <button className="w-[200px] text-start text-zinc-400 hover:text-zinc-200 text-[16px] md:text-[20px] font-[600] transition-colors" onClick={handleContactUs} >
                     Contact Us
                 </button>
             </div>
